@@ -7,63 +7,31 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background: #0D1B2A; }
-        .option-card:hover { border-color: #3b82f6; background: #1e3a8a; }
-        .progress-bar { transition: width 0.5s ease-in-out; }
-    </style>
+    <style>body { font-family: 'Inter', sans-serif; background: #0D1B2A; }</style>
 </head>
 <body class="text-white min-h-screen flex items-center justify-center p-6">
-
-    <div id="test-container" class="max-w-2xl w-full bg-[#1B263B] p-10 rounded-3xl shadow-2xl border border-gray-700">
-        <div class="text-center mb-8">
-            <h1 class="text-2xl font-black tracking-tighter uppercase italic text-blue-500">HABLEN ANALİZ</h1>
-            <div class="w-full bg-gray-800 h-2 rounded-full mt-4">
-                <div id="progress" class="progress-bar bg-blue-500 h-2 rounded-full" style="width: 20%"></div>
-            </div>
-        </div>
-
+    <div id="test-container" class="max-w-2xl w-full bg-[#1B263B] p-10 rounded-3xl shadow-2xl border border-gray-700 text-center">
         <div id="question-area">
-            <h2 id="question-text" class="text-2xl font-bold mb-8 leading-tight italic">Yükleniyor...</h2>
-            <div id="options" class="grid grid-cols-1 gap-4">
-                </div>
+            <h1 class="text-xl font-black text-blue-500 mb-6 uppercase italic">Hablen Analiz</h1>
+            <h2 id="question-text" class="text-2xl font-bold mb-8">Yükleniyor...</h2>
+            <div id="options" class="grid grid-cols-1 gap-4"></div>
         </div>
-
-        <div id="result-area" class="hidden text-center">
-            <div class="mb-6 text-6xl animate-bounce">🚀</div>
-            <h2 class="text-3xl font-black mb-4 uppercase">Analiz Tamamlandı!</h2>
-            <p class="text-gray-400 mb-8 font-medium">Yeteneklerin sistemimize kaydediliyor. Sana uygun ilanlar hazırlanıyor...</p>
-            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-500 mx-auto"></div>
+        <div id="result-area" class="hidden">
+            <div class="text-6xl mb-4 animate-bounce">🚀</div>
+            <h2 class="text-3xl font-black mb-4">ANALİZ TAMAMLANDI</h2>
+            <p class="text-gray-400 mb-6">Yeteneklerin profilinde listeleniyor...</p>
+            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto"></div>
         </div>
     </div>
 
     <script>
-        // --- SUPABASE BAĞLANTISI ---
         const SUPABASE_URL = 'https://hhxhcbtahzinrbqxgusz.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const questions = [
-            {
-                q: "Bir projeye başlarken hangisi seni daha çok heyecanlandırır?",
-                options: ["Görsel tasarımı planlamak", "Kod yapısını kurmak", "Pazarlama stratejisi geliştirmek", "Ekibi yönetmek"]
-            },
-            {
-                q: "Karmaşık bir problemle karşılaştığında ilk tepkin ne olur?",
-                options: ["Hemen çözüm üretmeye başlarım", "Detaylıca araştırma yaparım", "Başkalarına danışırım", "Sakin kalıp plan yaparım"]
-            },
-            {
-                q: "Hangi çalışma ortamı sana göre?",
-                options: ["Tamamen uzaktan (Remote)", "Ofis ortamı ve sosyallik", "Hibrit (Yarı ev yarı ofis)", "Kendi işimin patronu olmak"]
-            },
-            {
-                q: "Bir uygulamada senin için en önemli şey nedir?",
-                options: ["Hızı ve performansı", "Görünüşü ve estetiği", "Kullanım kolaylığı", "Faydalı olması"]
-            },
-            {
-                q: "Gelecekte kendini nerede görüyorsun?",
-                options: ["Teknik bir uzman", "Yaratıcı bir direktör", "Başarılı bir girişimci", "Üst düzey yönetici"]
-            }
+            { q: "Hangi alan seni daha çok heyecanlandırır?", options: ["Kod Yazmak", "Tasarım Yapmak", "Satış/Pazarlama", "Yönetim"] },
+            { q: "Nasıl çalışmayı tercih edersin?", options: ["Tamamen Uzaktan", "Ofis Ortamı", "Hibrit", "Esnek Saatler"] }
         ];
 
         let currentQuestion = 0;
@@ -73,55 +41,26 @@
             document.getElementById('question-text').innerText = q.q;
             const optionsDiv = document.getElementById('options');
             optionsDiv.innerHTML = '';
-
-            q.options.forEach(option => {
+            q.options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = "option-card w-full text-left p-5 rounded-2xl bg-[#0D1B2A] border-2 border-gray-800 transition duration-300 font-bold hover:scale-[1.02] active:scale-95";
-                btn.innerText = option;
-                btn.onclick = () => nextQuestion();
+                btn.className = "w-full p-4 rounded-xl bg-[#0D1B2A] border-2 border-gray-800 font-bold hover:border-blue-500 transition";
+                btn.innerText = opt;
+                btn.onclick = () => { if(currentQuestion < questions.length - 1) { currentQuestion++; loadQuestion(); } else { finishTest(); } };
                 optionsDiv.appendChild(btn);
             });
-
-            const progress = ((currentQuestion + 1) / questions.length) * 100;
-            document.getElementById('progress').style.width = progress + "%";
-        }
-
-        async function nextQuestion() {
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-                loadQuestion();
-            } else {
-                await finishTest();
-            }
         }
 
         async function finishTest() {
-            // Soru alanını gizle, yükleniyor ekranını aç
             document.getElementById('question-area').classList.add('hidden');
             document.getElementById('result-area').classList.remove('hidden');
 
-            // --- SUPABASE KAYIT İŞLEMİ ---
             const { data: { user } } = await supabaseClient.auth.getUser();
-            
             if (user) {
-                // Veritabanındaki 'rects' tablosunda testi bitirdiğini işaretle
-                const { error } = await supabaseClient
-                    .from('rects')
-                    .update({ 
-                        test_completed: true, 
-                        result_category: 'Yazılım & Teknoloji' 
-                    })
-                    .eq('id', user.id);
-                
-                if (error) console.log("Hata:", error.message);
+                // VERİ KAYDETME: 'rects' tablosunu güncelliyoruz
+                await supabaseClient.from('rects').update({ test_completed: true, result_category: 'Yazılım & Teknoloji' }).eq('id', user.id);
             }
-
-            // 2.5 saniye sonra profile yönlendir
-            setTimeout(() => {
-                window.location.href = 'profile.html';
-            }, 2500);
+            setTimeout(() => { window.location.href = 'profile.html'; }, 2000);
         }
-
         loadQuestion();
     </script>
 </body>
