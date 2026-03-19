@@ -5,27 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hablen | Kayıt Ol</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-[#0D1B2A] text-white flex items-center justify-center min-h-screen p-6">
+<body class="bg-[#0D1B2A] text-white flex items-center justify-center min-h-screen p-6 font-sans">
     <div class="bg-[#1B263B] p-10 rounded-3xl shadow-2xl w-full max-w-md border border-gray-700">
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold uppercase tracking-tighter">HABLEN</h1>
-            <p class="text-gray-400 mt-2">Yolculuğun burada başlıyor.</p>
+            <h1 class="text-3xl font-bold uppercase tracking-tighter text-white">HABLEN</h1>
+            <p class="text-gray-400 mt-2 text-sm font-medium">Yeteneklerini keşfetmek için ilk adımı at.</p>
         </div>
 
-        <form class="space-y-6">
+        <form id="authForm" class="space-y-6">
             <div>
-                <label class="block text-sm font-medium mb-2">E-posta</label>
-                <input type="email" placeholder="mail@adresin.com" class="w-full p-4 rounded-xl bg-[#0D1B2A] border border-gray-600 outline-none">
+                <label class="block text-sm font-medium mb-2 text-gray-300">E-posta</label>
+                <input id="email" type="email" required placeholder="mail@adresin.com" class="w-full p-4 rounded-xl bg-[#0D1B2A] border border-gray-600 outline-none text-white focus:border-blue-500 transition">
             </div>
             <div>
-                <label class="block text-sm font-medium mb-2">Şifre</label>
-                <input type="password" placeholder="••••••••" class="w-full p-4 rounded-xl bg-[#0D1B2A] border border-gray-600 outline-none">
+                <label class="block text-sm font-medium mb-2 text-gray-300">Şifre (En az 6 karakter)</label>
+                <input id="password" type="password" required placeholder="••••••••" class="w-full p-4 rounded-xl bg-[#0D1B2A] border border-gray-600 outline-none text-white focus:border-blue-500 transition">
             </div>
-            <button type="button" onclick="window.location.href='test.html'" class="w-full bg-blue-600 hover:bg-blue-700 p-4 rounded-xl font-bold text-lg transition">
+            <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 p-4 rounded-xl font-bold text-lg transition shadow-lg transform active:scale-95 text-white">
                 Hesap Oluştur ve Teste Geç
             </button>
         </form>
+        <p id="message" class="mt-4 text-center text-sm font-medium min-h-[20px]"></p>
     </div>
+
+    <script>
+        // Senin Bilgilerinle Hazırlandı 🚀
+        const SUPABASE_URL = 'https://hhxhcbtahzinrbqxgusz.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('message');
+            const btn = document.getElementById('submitBtn');
+
+            btn.innerText = "Kaydediliyor...";
+            btn.disabled = true;
+
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                msg.innerText = "Hata: " + error.message;
+                msg.className = "mt-4 text-center text-sm text-red-400 font-bold";
+                btn.innerText = "Tekrar Dene";
+                btn.disabled = false;
+            } else {
+                msg.innerText = "Başarılı! Teste yönlendiriliyorsunuz...";
+                msg.className = "mt-4 text-center text-sm text-green-400 font-bold";
+                setTimeout(() => {
+                    window.location.href = 'test.html';
+                }, 1500);
+            }
+        });
+    </script>
 </body>
 </html>
