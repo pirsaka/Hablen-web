@@ -6,23 +6,29 @@
     <title>Hablen | Profilim</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0D1B2A; }
+    </style>
 </head>
-<body class="bg-[#0D1B2A] text-white font-sans min-h-screen">
+<body class="text-white min-h-screen">
 
     <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#1B263B]">
-        <div class="text-2xl font-bold tracking-tighter uppercase text-white">HABLEN</div>
-        <button id="logoutBtn" class="text-red-400 hover:text-red-500 font-medium transition text-sm">Çıkış Yap</button>
+        <a href="index.html" class="text-2xl font-black tracking-tighter uppercase italic hover:text-blue-400 transition cursor-pointer">
+            HABLEN
+        </a>
+        <button id="logoutBtn" class="text-red-400 hover:text-red-500 font-bold transition text-sm">Çıkış Yap</button>
     </nav>
 
     <main class="max-w-4xl mx-auto p-8 mt-10">
-        <div class="bg-[#1B263B] p-8 rounded-3xl shadow-xl border border-gray-700">
+        <div class="bg-[#1B263B] p-8 rounded-3xl shadow-2xl border border-gray-700">
             <div class="flex items-center gap-6 mb-8">
-                <div class="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center text-4xl font-bold shadow-lg uppercase" id="userInitial">
+                <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-3xl font-black shadow-lg uppercase" id="userInitial">
                     ?
                 </div>
                 <div>
-                    <h2 class="text-3xl font-bold" id="userEmail">Yükleniyor...</h2>
-                    <p class="text-gray-400">Hablen Üyesi</p>
+                    <h2 class="text-2xl md:text-3xl font-bold break-all" id="userEmail">Yükleniyor...</h2>
+                    <p class="text-gray-400 font-medium">Hablen Onaylı Üye</p>
                 </div>
             </div>
 
@@ -30,23 +36,22 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="p-6 bg-[#0D1B2A] rounded-2xl border border-gray-800">
-                    <h3 class="text-blue-400 font-bold mb-2">Tamamlanan Testler</h3>
-                    <p class="text-2xl font-bold" id="testCount">0</p>
+                    <h3 class="text-blue-400 font-bold mb-2 uppercase text-xs tracking-widest">Tamamlanan Testler</h3>
+                    <p class="text-3xl font-black" id="testCount">0</p>
                 </div>
                 <div class="p-6 bg-[#0D1B2A] rounded-2xl border border-gray-800">
-                    <h3 class="text-green-400 font-bold mb-2">Eşleşme Durumu</h3>
-                    <p class="text-2xl font-bold">Hazırlanıyor</p>
+                    <h3 class="text-green-400 font-bold mb-2 uppercase text-xs tracking-widest">Eşleşme Durumu</h3>
+                    <p class="text-xl font-bold">Analiz Bekleniyor</p>
                 </div>
             </div>
 
-            <button onclick="window.location.href='test.html'" class="w-full mt-8 bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-bold text-lg transition">
-                Yetenek Testine Tekrar Gir
+            <button onclick="window.location.href='test.html'" class="w-full mt-8 bg-blue-600 hover:bg-blue-700 py-5 rounded-2xl font-black text-lg transition shadow-lg transform active:scale-95">
+                YETENEK TESTİNE BAŞLA
             </button>
         </div>
     </main>
 
     <script>
-        // Supabase Bilgilerin (Aynı Kalsın)
         const SUPABASE_URL = 'https://hhxhcbtahzinrbqxgusz.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -55,16 +60,13 @@
             const { data: { user } } = await supabaseClient.auth.getUser();
 
             if (!user) {
-                // Eğer giriş yapmamışsa kayıt sayfasına at
-                window.location.href = 'register.html';
+                window.location.href = 'login.html';
             } else {
-                // Bilgileri ekrana yaz
                 document.getElementById('userEmail').innerText = user.email;
                 document.getElementById('userInitial').innerText = user.email.charAt(0);
             }
         }
 
-        // Çıkış Yapma Fonksiyonu
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
             window.location.href = 'index.html';
