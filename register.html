@@ -24,14 +24,14 @@
                 <input id="password" type="password" required placeholder="••••••••" class="w-full p-4 rounded-xl bg-[#0D1B2A] border border-gray-600 outline-none text-white focus:border-blue-500 transition">
             </div>
             <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 p-4 rounded-xl font-bold text-lg transition shadow-lg transform active:scale-95 text-white">
-                Hesap Oluştur ve Teste Geç
+                Hesap Oluştur ve Profile Git
             </button>
         </form>
         <p id="message" class="mt-4 text-center text-sm font-medium min-h-[20px]"></p>
     </div>
 
     <script>
-        // Senin Bilgilerinle Hazırlandı 🚀
+        // Senin Supabase Bilgilerin 🚀
         const SUPABASE_URL = 'https://hhxhcbtahzinrbqxgusz.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
 
@@ -58,10 +58,12 @@
                 btn.innerText = "Tekrar Dene";
                 btn.disabled = false;
             } else {
-                msg.innerText = "Başarılı! Teste yönlendiriliyorsunuz...";
+                msg.innerText = "Başarılı! Profilinize yönlendiriliyorsunuz...";
                 msg.className = "mt-4 text-center text-sm text-green-400 font-bold";
+                
+                // --- 2. ADIM: Yönlendirme Artık Profile Gidiyor ---
                 setTimeout(() => {
-                    window.location.href = 'test.html';
+                    window.location.href = 'profile.html';
                 }, 1500);
             }
         });
