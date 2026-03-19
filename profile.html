@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hablen | Dijital & Part-Time Pazarı</title>
+    <title>Hablen | Keşfet</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
@@ -11,8 +11,9 @@
         body { font-family: 'Inter', sans-serif; background: #0D1B2A; }
         .job-card { background: #1B263B; border: 1px solid #2D3748; transition: all 0.3s ease; }
         .job-card:hover { border-color: #3b82f6; transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        .category-card { transition: all 0.3s; border: 2px solid transparent; }
-        .category-card:hover { border-color: #3b82f6; background: #16213E; }
+        .category-card { transition: all 0.3s; border: 2px solid transparent; cursor: pointer; }
+        .category-card:hover { border-color: #3b82f6; transform: scale(1.02); }
+        .search-input:focus { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
     </style>
 </head>
 <body class="text-white min-h-screen pb-20">
@@ -30,37 +31,31 @@
     <main class="max-w-6xl mx-auto p-6">
         
         <div class="mt-8 mb-12 text-center">
-            <h1 class="text-4xl font-black mb-4 tracking-tight uppercase italic">Geleceğini <span class="text-blue-500">Kurgula.</span></h1>
-            <p class="text-gray-400 text-sm font-medium">İster ekrandan, ister sahada çalışmaya başla.</p>
+            <h1 class="text-4xl font-black mb-6 tracking-tight uppercase italic">Fırsatları <span class="text-blue-500">Yakala.</span></h1>
+            <div class="relative max-w-2xl mx-auto group">
+                <input type="text" placeholder="TikTok Editörü, Konser Personeli, Discord Mod..." 
+                       class="search-input w-full p-5 pl-14 rounded-2xl bg-[#1B263B] border-2 border-gray-700 outline-none focus:border-blue-500 text-lg transition-all shadow-2xl">
+                <div class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">🔍</div>
+                <button class="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 px-6 py-2 rounded-xl font-black text-sm hover:bg-blue-700 transition">ARA</button>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            <div class="category-card p-8 rounded-3xl bg-[#1B263B] border border-gray-700 cursor-pointer">
-                <div class="flex items-center gap-4 mb-4">
-                    <span class="text-4xl">🌐</span>
-                    <h2 class="font-black text-2xl uppercase tracking-tighter">Dijital Evren</h2>
+            <div class="category-card p-6 rounded-3xl bg-gradient-to-br from-[#1B263B] to-[#0D1B2A] border border-gray-700">
+                <div class="flex items-center gap-4 mb-3">
+                    <span class="text-3xl">🌐</span>
+                    <h2 class="font-black text-xl uppercase tracking-tighter">Dijital Evren</h2>
                 </div>
-                <p class="text-gray-400 text-xs font-bold leading-relaxed">
-                    SOSYAL MEDYA YÖNETİMİ • DISCORD MOD • EDİTÖRLÜK • REMOTE İŞLER
-                </p>
-                <div class="mt-4 h-1 w-20 bg-blue-600 rounded-full"></div>
+                <p class="text-blue-400 text-[10px] font-black tracking-widest uppercase">Sosyal Medya • Uzaktan • Editörlük</p>
             </div>
 
-            <div class="category-card p-8 rounded-3xl bg-[#1B263B] border border-gray-700 cursor-pointer">
-                <div class="flex items-center gap-4 mb-4">
-                    <span class="text-4xl">🕒</span>
-                    <h2 class="font-black text-2xl uppercase tracking-tighter">Saha & Part-Time</h2>
+            <div class="category-card p-6 rounded-3xl bg-gradient-to-br from-[#1B263B] to-[#0D1B2A] border border-gray-700">
+                <div class="flex items-center gap-4 mb-3">
+                    <span class="text-3xl">🕒</span>
+                    <h2 class="font-black text-xl uppercase tracking-tighter">Saha & Part-Time</h2>
                 </div>
-                <p class="text-gray-400 text-xs font-bold leading-relaxed">
-                    ETKİNLİK PERSONELİ • CAFE/RESTORAN • ANKETÖR • GÜNLÜK İŞLER
-                </p>
-                <div class="mt-4 h-1 w-20 bg-green-500 rounded-full"></div>
+                <p class="text-green-500 text-[10px] font-black tracking-widest uppercase">Etkinlik • Günlük • Cafe/Saha</p>
             </div>
-        </div>
-
-        <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
-            <h3 class="text-xl font-black uppercase tracking-widest text-blue-400">Öne Çıkan İlanlar</h3>
-            <div class="text-xs text-gray-500 font-bold uppercase">Toplam 42 İlan</div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -68,45 +63,45 @@
             <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-t-4 border-t-blue-500">
                 <div>
                     <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded font-black uppercase">Dijital</span>
-                        <span class="text-[10px] text-gray-500 font-bold uppercase">Uzaktan</span>
+                        <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded font-black uppercase tracking-tighter">Dijital</span>
+                        <span class="text-[10px] text-gray-500 font-bold uppercase italic">Uzaktan</span>
                     </div>
-                    <h4 class="font-black text-lg mb-1">TikTok İçerik Editörü</h4>
-                    <p class="text-gray-400 text-xs font-bold mb-4 italic">Kreatif Ajans X</p>
+                    <h4 class="font-black text-lg mb-1 leading-tight">Reels / Shorts Editörü</h4>
+                    <p class="text-gray-400 text-xs font-bold mb-4 italic">Ajans Hablen</p>
                 </div>
                 <div class="flex items-center justify-between mt-4">
-                    <span class="text-white font-black text-sm tracking-tighter italic">₺8.000 / Ay</span>
-                    <button class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-blue-500 transition">Detaylar</button>
+                    <span class="text-white font-black text-sm italic tracking-tighter">₺7.500 / Ay</span>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-blue-500 transition shadow-lg">Başvur</button>
                 </div>
             </div>
 
             <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-t-4 border-t-green-500">
                 <div>
                     <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] bg-green-500/10 text-green-400 px-2 py-1 rounded font-black uppercase">Part-Time</span>
-                        <span class="text-[10px] text-gray-500 font-bold uppercase italic text-right">Beşiktaş, İst.</span>
+                        <span class="text-[10px] bg-green-500/10 text-green-400 px-2 py-1 rounded font-black uppercase tracking-tighter">Saha</span>
+                        <span class="text-[10px] text-gray-500 font-bold uppercase italic text-right">Kadıköy, İst.</span>
                     </div>
-                    <h4 class="font-black text-lg mb-1">Konser Etkinlik Personeli</h4>
-                    <p class="text-gray-400 text-xs font-bold mb-4 italic">Event Masters</p>
+                    <h4 class="font-black text-lg mb-1 leading-tight">Tanıtım & Stand Personeli</h4>
+                    <p class="text-gray-400 text-xs font-bold mb-4 italic">Global Events</p>
                 </div>
                 <div class="flex items-center justify-between mt-4">
-                    <span class="text-white font-black text-sm tracking-tighter italic">₺1.200 / Günlük</span>
-                    <button class="bg-green-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-green-500 transition">Başvur</button>
+                    <span class="text-white font-black text-sm italic tracking-tighter">₺1.500 / Günlük</span>
+                    <button class="bg-green-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-green-500 transition shadow-lg">Detay</button>
                 </div>
             </div>
 
             <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-t-4 border-t-blue-500">
                 <div>
                     <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded font-black uppercase">Dijital</span>
-                        <span class="text-[10px] text-gray-500 font-bold uppercase">Uzaktan</span>
+                        <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded font-black uppercase tracking-tighter">Dijital</span>
+                        <span class="text-[10px] text-gray-500 font-bold uppercase italic text-right">Discord</span>
                     </div>
-                    <h4 class="font-black text-lg mb-1">Discord Topluluk Modu</h4>
-                    <p class="text-gray-400 text-xs font-bold mb-4 italic">NFT Project Global</p>
+                    <h4 class="font-black text-lg mb-1 leading-tight">Sunucu Moderatörü</h4>
+                    <p class="text-gray-400 text-xs font-bold mb-4 italic">Crypto Hub</p>
                 </div>
                 <div class="flex items-center justify-between mt-4">
-                    <span class="text-white font-black text-sm tracking-tighter italic">₺4.500 / Ay</span>
-                    <button class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-blue-500 transition">Detaylar</button>
+                    <span class="text-white font-black text-sm italic tracking-tighter">₺5.000 / Ay</span>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-blue-500 transition shadow-lg">Başvur</button>
                 </div>
             </div>
 
