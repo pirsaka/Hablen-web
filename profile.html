@@ -3,103 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hablen | Keşfet</title>
+    <title>Hablen | Profil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background: #0D1B2A; }
-        .job-card:hover { border-color: #3b82f6; transform: translateY(-3px); }
-        .search-focus:focus { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
-    </style>
+    <style>body { font-family: 'Inter', sans-serif; background: #0D1B2A; }</style>
 </head>
 <body class="text-white min-h-screen pb-20">
-
     <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#1B263B] sticky top-0 z-50">
-        <a href="index.html" class="text-2xl font-black tracking-tighter uppercase italic hover:text-blue-400 transition cursor-pointer">
-            HABLEN
-        </a>
-        <div class="flex items-center gap-4">
-            <span id="userEmailNav" class="hidden md:block text-xs text-gray-400 font-medium"></span>
-            <button id="logoutBtn" class="text-red-400 hover:text-red-500 font-bold transition text-sm">Çıkış Yap</button>
-        </div>
+        <a href="index.html" class="text-2xl font-black tracking-tighter uppercase italic hover:text-blue-400 transition">HABLEN</a>
+        <button id="logoutBtn" class="text-red-400 font-bold text-sm">Çıkış Yap</button>
     </nav>
 
     <main class="max-w-5xl mx-auto p-6">
-        
         <div class="mt-4 mb-10">
             <h2 class="text-3xl font-black mb-4 tracking-tight">Hangi yeteneğinle <span class="text-blue-500">parlamak</span> istersin?</h2>
-            <div class="relative group">
-                <input type="text" placeholder="Yazılım, Tasarım, Pazarlama..." class="w-full p-5 pl-14 rounded-2xl bg-[#1B263B] border-2 border-gray-700 outline-none transition-all search-focus text-lg font-medium focus:border-blue-500">
-                <div class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-500 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </div>
-                <button class="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-xl font-bold transition shadow-lg">Ara</button>
-            </div>
+            <div class="relative"><input type="text" placeholder="Yazılım, Tasarım..." class="w-full p-5 rounded-2xl bg-[#1B263B] border-2 border-gray-700 outline-none focus:border-blue-500 text-lg"></div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <div class="lg:col-span-1 space-y-6">
+            <div class="lg:col-span-1">
                 <div class="bg-[#1B263B] p-6 rounded-3xl border border-gray-700 shadow-xl">
                     <div class="flex items-center gap-4 mb-4">
-                        <div id="userInitial" class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-black text-xl">?</div>
-                        <div>
-                            <p class="text-xs text-gray-400 uppercase font-bold tracking-widest leading-tight">Hoş geldin</p>
-                            <p id="userEmail" class="font-bold text-sm truncate w-40">Yükleniyor...</p>
-                        </div>
+                        <div id="userInitial" class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-black text-xl text-white uppercase">?</div>
+                        <p id="userEmail" class="font-bold text-sm truncate w-40">Yükleniyor...</p>
                     </div>
                     <hr class="border-gray-800 my-4">
-                    <div class="space-y-3">
+                    <div id="testStatusBox" class="space-y-3">
                         <div class="flex justify-between text-xs font-bold">
                             <span class="text-gray-400 uppercase">Test Durumu:</span>
-                            <span class="text-red-400">Çözülmedi</span>
+                            <span id="statusText" class="text-red-400">Çözülmedi</span>
                         </div>
-                        <button onclick="window.location.href='test.html'" class="w-full bg-white text-black hover:bg-blue-500 hover:text-white py-3 rounded-xl font-black text-sm transition transform active:scale-95 shadow-md">
-                            ŞİMDİ TESTE GİR ⚡
-                        </button>
+                        <div id="testActionArea">
+                            <button onclick="window.location.href='test.html'" class="w-full bg-white text-black hover:bg-blue-500 hover:text-white py-3 rounded-xl font-black text-sm transition shadow-md">ŞİMDİ TESTE GİR ⚡</button>
+                        </div>
                     </div>
                 </div>
             </div>
-
             <div class="lg:col-span-2">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-black uppercase tracking-tight text-blue-400">Popüler İlanlar</h3>
-                    <div class="flex gap-2 text-[10px] font-bold">
-                        <span class="bg-gray-800 border border-gray-700 px-2 py-1 rounded">Hepsi</span>
-                        <span class="text-gray-500 px-2 py-1">Sana Özel</span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 gap-4">
-                    <div class="job-card bg-[#1B263B] p-6 rounded-2xl border border-gray-800 transition shadow-lg flex justify-between items-center">
-                        <div>
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="bg-blue-500/10 text-blue-400 text-[10px] px-2 py-1 rounded-md font-black uppercase">Yazılım</span>
-                                <span class="text-gray-500 text-[10px] font-bold uppercase italic">Global Tech</span>
-                            </div>
-                            <h4 class="font-bold text-lg">Senior Python Engineer</h4>
-                            <p class="text-blue-400 font-black text-sm mt-1">₺85.000 - 110.000</p>
-                        </div>
-                        <button class="bg-gray-800 hover:bg-blue-600 px-5 py-3 rounded-xl font-bold text-xs transition">Detaylar</button>
-                    </div>
-
-                    <div class="job-card bg-[#1B263B] p-6 rounded-2xl border border-gray-800 transition shadow-lg flex justify-between items-center">
-                        <div>
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="bg-purple-500/10 text-purple-400 text-[10px] px-2 py-1 rounded-md font-black uppercase">Tasarım</span>
-                                <span class="text-gray-500 text-[10px] font-bold uppercase italic">Creativ Agency</span>
-                            </div>
-                            <h4 class="font-bold text-lg">Brand Identity Designer</h4>
-                            <p class="text-blue-400 font-black text-sm mt-1">₺55.000 - 70.000</p>
-                        </div>
-                        <button class="bg-gray-800 hover:bg-blue-600 px-5 py-3 rounded-xl font-bold text-xs transition">Detaylar</button>
+                <h3 class="text-xl font-black uppercase tracking-tight text-blue-400 mb-6">Popüler İlanlar</h3>
+                <div class="space-y-4">
+                    <div class="bg-[#1B263B] p-6 rounded-2xl border border-gray-800 flex justify-between items-center">
+                        <div><h4 class="font-bold text-lg">Senior Python Engineer</h4><p class="text-blue-400 font-black text-sm">₺85.000 - 110.000</p></div>
+                        <button class="bg-gray-800 px-5 py-3 rounded-xl font-bold text-xs">Detaylar</button>
                     </div>
                 </div>
             </div>
-
         </div>
     </main>
 
@@ -110,20 +59,24 @@
 
         async function checkUser() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) {
-                window.location.href = 'login.html';
-            } else {
-                document.getElementById('userEmail').innerText = user.email;
-                document.getElementById('userEmailNav').innerText = user.email;
-                document.getElementById('userInitial').innerText = user.email.charAt(0);
+            if (!user) { window.location.href = 'login.html'; return; }
+            document.getElementById('userEmail').innerText = user.email;
+            document.getElementById('userInitial').innerText = user.email.charAt(0);
+
+            // VERİ OKUMA: 'rects' tablosundan test_completed değerini kontrol ediyoruz
+            const { data: profileData } = await supabaseClient.from('rects').select('*').eq('id', user.id).single();
+
+            if (profileData && profileData.test_completed) {
+                document.getElementById('statusText').innerText = "Tamamlandı ✅";
+                document.getElementById('statusText').className = "text-green-400";
+                document.getElementById('testActionArea').innerHTML = `
+                    <p class="text-[10px] text-gray-400 italic bg-gray-800/50 p-3 rounded-lg border border-blue-900/30">
+                        ✨ Yeteneklerine göre ilanları senin için derledik. Başarılar dileriz!
+                    </p>`;
             }
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await supabaseClient.auth.signOut();
-            window.location.href = 'index.html';
-        });
-
+        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; });
         checkUser();
     </script>
 </body>
