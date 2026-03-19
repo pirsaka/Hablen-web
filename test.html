@@ -3,62 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hablen | Uygunluk Testi</title>
+    <title>Hablen | Yetenek Testi</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #0D1B2A; color: #E0E1DD; }
-        .card { background-color: #1B263B; border: 1px solid #415A77; }
+        body { font-family: 'Inter', sans-serif; background: #0D1B2A; }
+        .option-card:hover { border-color: #3b82f6; background: #1e3a8a; }
+        .progress-bar { transition: width 0.5s ease-in-out; }
     </style>
 </head>
-<body class="p-6">
-    <div class="max-w-2xl mx-auto mt-10">
-        <div class="text-center mb-10">
-            <h1 class="text-3xl font-bold text-white">Hablen Uygunluk Testi</h1>
-            <p class="text-gray-400 mt-2">Karakterine en uygun işi bulmamıza yardım et.</p>
+<body class="text-white min-h-screen flex items-center justify-center p-6">
+
+    <div id="test-container" class="max-w-2xl w-full bg-[#1B263B] p-10 rounded-3xl shadow-2xl border border-gray-700">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-black tracking-tighter uppercase italic text-blue-500">HABLEN ANALİZ</h1>
+            <div class="w-full bg-gray-800 h-2 rounded-full mt-4">
+                <div id="progress" class="progress-bar bg-blue-500 h-2 rounded-full" style="width: 20%"></div>
+            </div>
         </div>
 
-        <div id="test-container" class="card p-8 rounded-2xl shadow-xl">
-            <div id="question-area">
-                <h2 id="question-text" class="text-xl font-semibold mb-6 italic">Yükleniyor...</h2>
-                <div id="options" class="space-y-4">
-                    </div>
-            </div>
-            <div id="result-area" class="hidden text-center">
-                <h2 class="text-2xl font-bold text-green-400 mb-4">Test Tamamlandı!</h2>
-                <p id="final-score" class="text-lg text-gray-300 mb-6"></p>
-                <button onclick="location.href='index.html'" class="bg-blue-600 px-6 py-2 rounded-lg font-bold">Ana Sayfaya Dön</button>
-            </div>
+        <div id="question-area">
+            <h2 id="question-text" class="text-2xl font-bold mb-8 leading-tight">Yükleniyor...</h2>
+            
+            <div id="options" class="grid grid-cols-1 gap-4">
+                </div>
+        </div>
+
+        <div id="result-area" class="hidden text-center">
+            <div class="mb-6 text-6xl">🚀</div>
+            <h2 class="text-3xl font-black mb-4">Analiz Tamamlandı!</h2>
+            <p class="text-gray-400 mb-8 font-medium">Yeteneklerin hesaplandı. Sana en uygun ilanları listelemek için yönlendiriliyorsun...</p>
+            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-500 mx-auto"></div>
         </div>
     </div>
 
     <script>
         const questions = [
-            { q: "Karmaşık bir problemle karşılaştığında nasıl ilerlersin?", a: ["Yalnız düşünürüm", "Ekibimle konuşurum"] },
-            { q: "Düzenli bir ofis mi, yoksa her gün değişen bir ortam mı?", a: ["Düzenli Ofis", "Dinamik/Değişken Ortam"] },
-            { q: "Kararları sen mi alırsın, yoksa alınan kararı mı uygularsın?", a: ["Liderlik Ederim", "Uygulamaya Odaklanırım"] }
+            {
+                q: "Bir projeye başlarken hangisi seni daha çok heyecanlandırır?",
+                options: ["Görsel tasarımı planlamak", "Kod yapısını kurmak", "Pazarlama stratejisi geliştirmek", "Ekibi yönetmek"]
+            },
+            {
+                q: "Karmaşık bir problemle karşılaştığında ilk tepkin ne olur?",
+                options: ["Hemen çözüm üretmeye başlarım", "Detaylıca araştırma yaparım", "Başkalarına danışırım", "Sakin kalıp plan yaparım"]
+            },
+            {
+                q: "Hangi çalışma ortamı sana göre?",
+                options: ["Tamamen uzaktan (Remote)", "Ofis ortamı ve sosyallik", "Hibrit (Yarı ev yarı ofis)", "Kendi işimin patronu olmak"]
+            },
+            {
+                q: "Bir uygulamada senin için en önemli şey nedir?",
+                options: ["Hızı ve performansı", "Görünüşü ve estetiği", "Kullanım kolaylığı", "Faydalı olması"]
+            },
+            {
+                q: "Gelecekte kendini nerede görüyorsun?",
+                options: ["Teknik bir uzman", "Yaratıcı bir direktör", "Başarılı bir girişimci", "Üst düzey yönetici"]
+            }
         ];
 
-        let currentIdx = 0;
+        let currentQuestion = 0;
 
-        function showQuestion() {
-            if(currentIdx < questions.length) {
-                document.getElementById('question-text').innerText = questions[currentIdx].q;
-                const optionsDiv = document.getElementById('options');
-                optionsDiv.innerHTML = '';
-                questions[currentIdx].a.forEach(opt => {
-                    const btn = document.createElement('button');
-                    btn.className = "w-full text-left p-4 rounded-xl border border-gray-600 hover:bg-blue-900 transition";
-                    btn.innerText = opt;
-                    btn.onclick = () => { currentIdx++; showQuestion(); };
-                    optionsDiv.appendChild(btn);
-                });
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('question-text').innerText = q.q;
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+
+            q.options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = "option-card w-full text-left p-5 rounded-2xl bg-[#0D1B2A] border-2 border-gray-800 transition duration-300 font-bold hover:scale-[1.02] active:scale-95";
+                btn.innerText = option;
+                btn.onclick = nextQuestion;
+                optionsDiv.appendChild(btn);
+            });
+
+            // Progress Bar Güncelle
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress').style.width = progress + "%";
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
             } else {
-                document.getElementById('question-area').classList.add('hidden');
-                document.getElementById('result-area').classList.remove('hidden');
-                document.getElementById('final-score').innerText = "Profilin analiz edildi. Uygun ilanlar listelenecek!";
+                showResult();
             }
         }
-        showQuestion();
+
+        function showResult() {
+            document.getElementById('question-area').classList.add('hidden');
+            document.getElementById('result-area').classList.remove('hidden');
+
+            // 2 saniye sonra PROFİL (Ana Menü) sayfasına atar
+            setTimeout(() => {
+                window.location.href = 'profile.html';
+            }, 2500);
+        }
+
+        // İlk soruyu yükle
+        loadQuestion();
     </script>
 </body>
 </html>
