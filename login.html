@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Hablen | Giriş Yap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-[#0D1B2A] text-white flex items-center justify-center min-h-screen p-6">
+    <div class="bg-[#1B263B] p-10 rounded-3xl shadow-2xl w-full max-w-md border border-gray-700 text-center">
+        <h1 class="text-3xl font-bold mb-8">HABLEN GİRİŞ</h1>
+        <form id="loginForm" class="space-y-6 text-left">
+            <input id="email" type="email" placeholder="E-posta" required class="w-full p-4 rounded-xl bg-[#0D1B2A] border border-gray-600 outline-none">
+            <input id="password" type="password" placeholder="Şifre" required class="w-full p-4 rounded-xl bg-[#0D1B2A] border border-gray-600 outline-none">
+            <button type="submit" class="w-full bg-blue-600 p-4 rounded-xl font-bold">Giriş Yap</button>
+        </form>
+        <p id="msg" class="mt-4"></p>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://hhxhcbtahzinrbqxgusz.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+            });
+
+            if (error) {
+                document.getElementById('msg').innerText = "Hata: " + error.message;
+            } else {
+                window.location.href = 'profile.html';
+            }
+        });
+    </script>
+</body>
+</html>
