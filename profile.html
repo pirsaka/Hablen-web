@@ -3,79 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hablen | İlanlar</title>
+    <title>Hablen | Dijital & Reel İş Pazarı</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: #0D1B2A; }
         .job-card { background: #1B263B; border: 1px solid #2D3748; transition: all 0.3s ease; }
-        .job-card:hover { border-color: #3b82f6; transform: translateY(-4px); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2); }
+        .job-card:hover { border-color: #3b82f6; transform: translateY(-4px); }
+        .category-btn { transition: all 0.2s; border: 2px solid transparent; }
+        .category-btn.active { border-color: #3b82f6; background: #1e3a8a; }
     </style>
 </head>
 <body class="text-white min-h-screen pb-20">
 
     <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#1B263B] sticky top-0 z-50">
-        <a href="index.html" class="text-2xl font-black tracking-tighter uppercase italic hover:text-blue-400 transition">
-            HABLEN
-        </a>
-        
+        <a href="index.html" class="text-2xl font-black tracking-tighter uppercase italic hover:text-blue-400 transition">HABLEN</a>
         <div class="flex items-center gap-4">
-            <button onclick="window.location.href='create-job.html'" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-xs font-black transition uppercase tracking-widest shadow-lg active:scale-95">
+            <button onclick="window.location.href='create-job.html'" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-xs font-black transition uppercase shadow-lg">
                 + İlan Ver
             </button>
-            <button id="logoutBtn" class="text-red-400 hover:text-red-500 font-bold transition text-xs">Çıkış</button>
+            <button id="logoutBtn" class="text-red-400 font-bold text-xs">Çıkış</button>
         </div>
     </nav>
 
     <main class="max-w-6xl mx-auto p-6">
         
         <div class="mt-8 mb-12 text-center">
-            <h1 class="text-4xl font-black mb-4 tracking-tight">Dijital Dünyada <span class="text-blue-500 italic">İşini Bul.</span></h1>
+            <h1 class="text-4xl font-black mb-4 tracking-tight underline decoration-blue-500">Kariyerini Seç</h1>
             <div class="relative max-w-2xl mx-auto">
-                <input type="text" placeholder="Discord Mod, Oyun Koçu, Editör..." 
-                       class="w-full p-5 pl-14 rounded-2xl bg-[#1B263B] border-2 border-gray-700 outline-none focus:border-blue-500 text-lg transition-all shadow-2xl">
-                <div class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 text-xl">🔍</div>
+                <input type="text" placeholder="Discord Mod, Yazılımcı, Editör..." 
+                       class="w-full p-5 pl-14 rounded-2xl bg-[#1B263B] border-2 border-gray-700 outline-none focus:border-blue-500 text-lg">
+                <div class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">🔍</div>
             </div>
         </div>
 
-        <div class="flex gap-3 mb-10 overflow-x-auto pb-2 scrollbar-hide">
-            <button class="bg-blue-600 px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap">Hepsi</button>
-            <button class="bg-gray-800 hover:bg-gray-700 px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap">🎮 Gaming</button>
-            <button class="bg-gray-800 hover:bg-gray-700 px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap">💬 Discord</button>
-            <button class="bg-gray-800 hover:bg-gray-700 px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap">🎥 Yayın</button>
+        <div class="flex flex-col md:flex-row gap-6 mb-12">
+            <div class="flex-1 bg-gradient-to-br from-purple-900/40 to-blue-900/40 p-1 rounded-3xl">
+                <button class="category-btn active w-full p-8 rounded-3xl bg-[#0D1B2A]/80 flex flex-col items-center gap-2">
+                    <span class="text-4xl">🎮</span>
+                    <span class="font-black text-xl uppercase tracking-tighter">Dijital Evren</span>
+                    <span class="text-[10px] text-blue-400 font-bold">DISCORD • GAMING • MODLUK</span>
+                </button>
+            </div>
+
+            <div class="flex-1 bg-gradient-to-br from-green-900/40 to-blue-900/40 p-1 rounded-3xl">
+                <button class="category-btn w-full p-8 rounded-3xl bg-[#0D1B2A]/80 flex flex-col items-center gap-2 text-gray-400 hover:text-white transition">
+                    <span class="text-4xl">💼</span>
+                    <span class="font-black text-xl uppercase tracking-tighter">Reel Dünya</span>
+                    <span class="text-[10px] text-green-400 font-bold">YAZILIM • TASARIM • OFİS</span>
+                </button>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="job-card p-6 rounded-3xl flex flex-col justify-between">
+            
+            <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-l-4 border-l-purple-500">
                 <div>
                     <div class="flex justify-between items-start mb-4">
-                        <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-xl">💬</div>
-                        <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded font-black uppercase tracking-widest">Discord</span>
+                        <span class="text-[10px] bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full font-black uppercase">Dijital</span>
+                        <span class="text-xs font-bold text-gray-500 italic">Discord Mod</span>
                     </div>
-                    <h4 class="font-black text-xl mb-1">Topluluk Moderatörü</h4>
-                    <p class="text-gray-500 text-xs font-bold mb-4">Gaming TR Sunucusu</p>
+                    <h4 class="font-black text-xl mb-1">Topluluk Yöneticisi</h4>
+                    <p class="text-gray-400 text-xs font-bold mb-4">Metaverse Guild Sunucusu</p>
                 </div>
                 <div class="flex items-center justify-between mt-4">
-                    <span class="text-green-400 font-black text-sm italic">₺4.000 / Ay</span>
-                    <button class="bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-xl font-bold text-[10px] transition uppercase">Başvur</button>
+                    <span class="text-blue-400 font-black text-sm">₺3.500 / Ay</span>
+                    <button class="bg-white text-black px-4 py-2 rounded-xl font-bold text-[10px] uppercase">Başvur</button>
                 </div>
             </div>
 
-            <div class="job-card p-6 rounded-3xl flex flex-col justify-between">
+            <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-l-4 border-l-green-500">
                 <div>
                     <div class="flex justify-between items-start mb-4">
-                        <div class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center text-xl">🎮</div>
-                        <span class="text-[10px] bg-red-500/10 text-red-400 px-2 py-1 rounded font-black uppercase tracking-widest">Oyun Koçu</span>
+                        <span class="text-[10px] bg-green-500/20 text-green-400 px-3 py-1 rounded-full font-black uppercase">Reel</span>
+                        <span class="text-xs font-bold text-gray-500 italic">Ofis / Hibrit</span>
                     </div>
-                    <h4 class="font-black text-xl mb-1">Radiant Rank Koçluğu</h4>
-                    <p class="text-gray-500 text-xs font-bold mb-4">Valorant / Sanal</p>
+                    <h4 class="font-black text-xl mb-1">Junior Web Developer</h4>
+                    <p class="text-gray-400 text-xs font-bold mb-4">İstanbul / Teknokent</p>
                 </div>
                 <div class="flex items-center justify-between mt-4">
-                    <span class="text-green-400 font-black text-sm italic">₺400 / Saat</span>
-                    <button class="bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-xl font-bold text-[10px] transition uppercase">Detay</button>
+                    <span class="text-green-400 font-black text-sm">₺45.000+</span>
+                    <button class="bg-white text-black px-4 py-2 rounded-xl font-bold text-[10px] uppercase">Detay</button>
                 </div>
             </div>
+
+            <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-l-4 border-l-purple-500">
+                <div>
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-[10px] bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full font-black uppercase">Dijital</span>
+                        <span class="text-xs font-bold text-gray-500 italic">Gaming</span>
+                    </div>
+                    <h4 class="font-black text-xl mb-1">CS2 Rank Yükseltme Koçu</h4>
+                    <p class="text-gray-400 text-xs font-bold mb-4">Freelance / Sanal</p>
+                </div>
+                <div class="flex items-center justify-between mt-4">
+                    <span class="text-blue-400 font-black text-sm">₺600 / Saat</span>
+                    <button class="bg-white text-black px-4 py-2 rounded-xl font-bold text-[10px] uppercase">Başvur</button>
+                </div>
+            </div>
+
         </div>
     </main>
 
