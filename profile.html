@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hablen | Profilim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-[#0D1B2A] text-white font-sans min-h-screen">
+
+    <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#1B263B]">
+        <div class="text-2xl font-bold tracking-tighter uppercase text-white">HABLEN</div>
+        <button id="logoutBtn" class="text-red-400 hover:text-red-500 font-medium transition text-sm">Çıkış Yap</button>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-8 mt-10">
+        <div class="bg-[#1B263B] p-8 rounded-3xl shadow-xl border border-gray-700">
+            <div class="flex items-center gap-6 mb-8">
+                <div class="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center text-4xl font-bold shadow-lg uppercase" id="userInitial">
+                    ?
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold" id="userEmail">Yükleniyor...</h2>
+                    <p class="text-gray-400">Hablen Üyesi</p>
+                </div>
+            </div>
+
+            <hr class="border-gray-700 mb-8">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 bg-[#0D1B2A] rounded-2xl border border-gray-800">
+                    <h3 class="text-blue-400 font-bold mb-2">Tamamlanan Testler</h3>
+                    <p class="text-2xl font-bold" id="testCount">0</p>
+                </div>
+                <div class="p-6 bg-[#0D1B2A] rounded-2xl border border-gray-800">
+                    <h3 class="text-green-400 font-bold mb-2">Eşleşme Durumu</h3>
+                    <p class="text-2xl font-bold">Hazırlanıyor</p>
+                </div>
+            </div>
+
+            <button onclick="window.location.href='test.html'" class="w-full mt-8 bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-bold text-lg transition">
+                Yetenek Testine Tekrar Gir
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // Supabase Bilgilerin (Aynı Kalsın)
+        const SUPABASE_URL = 'https://hhxhcbtahzinrbqxgusz.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function checkUser() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            if (!user) {
+                // Eğer giriş yapmamışsa kayıt sayfasına at
+                window.location.href = 'register.html';
+            } else {
+                // Bilgileri ekrana yaz
+                document.getElementById('userEmail').innerText = user.email;
+                document.getElementById('userInitial').innerText = user.email.charAt(0);
+            }
+        }
+
+        // Çıkış Yapma Fonksiyonu
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        });
+
+        checkUser();
+    </script>
+</body>
+</html>
