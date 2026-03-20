@@ -10,40 +10,41 @@
     <style>
         body { font-family: 'Inter', sans-serif; background: #0D1B2A; color: white; }
         .input-field { background: #1B263B; border: 1px solid #2D3748; transition: 0.3s; }
-        .input-field:focus { border-color: #3b82f6; outline: none; }
-        .image-dropzone { border: 2px dashed #2D3748; transition: 0.3s; cursor: pointer; }
+        .input-field:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 20px rgba(59, 130, 246, 0.1); }
+        .image-dropzone { border: 2px dashed #2D3748; transition: 0.3s; cursor: pointer; position: relative; overflow: hidden; }
         .image-dropzone:hover { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
-        .loader { border-top-color: #3b82f6; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #img_preview { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
     </style>
 </head>
 <body class="min-h-screen p-6 pb-24">
 
     <nav class="max-w-3xl mx-auto flex justify-between items-center mb-16">
-        <div onclick="window.location.href='profile.html'" class="text-2xl font-black uppercase italic tracking-tighter cursor-pointer">HABLEN</div>
-        <button onclick="window.location.href='profile.html'" class="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition">Vazgeç</button>
+        <div onclick="window.location.href='profile.html'" class="text-2xl font-black uppercase italic tracking-tighter cursor-pointer hover:text-blue-500 transition">HABLEN</div>
+        <button onclick="window.location.href='profile.html'" class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-white transition">Vazgeç</button>
     </nav>
 
     <main class="max-w-xl mx-auto">
         <header class="mb-12">
-            <h1 class="text-5xl font-[900] uppercase italic tracking-tighter text-white">İlanını <br><span class="text-blue-500">Görselleştir</span></h1>
-            <p class="text-gray-500 text-[10px] font-bold uppercase mt-4 tracking-[0.3em] italic">Fotoğraflı ilanlar daha çok ilgi çeker.</p>
+            <h1 class="text-5xl font-[900] uppercase italic tracking-tighter text-white leading-none">İlanını <br><span class="text-blue-500">Hazırla</span></h1>
+            <p class="text-gray-500 text-[10px] font-bold uppercase mt-4 tracking-[0.3em] italic">Görsel eklenen ilanlar %80 daha hızlı sonuç verir.</p>
         </header>
 
         <form id="jobForm" class="space-y-10">
             <div class="space-y-4">
-                <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest">İş Görseli (Zorunlu Değil)</label>
+                <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest">İş Görseli (Opsiyonel)</label>
                 <input type="file" id="image_input" accept="image/*" class="hidden">
-                <label for="image_input" id="dropzone" class="image-dropzone w-full p-10 rounded-[30px] flex flex-col items-center justify-center">
-                    <span id="preview_icon" class="text-4xl mb-3">📸</span>
-                    <span id="file_name" class="text-[10px] font-black uppercase text-gray-500 italic">Bir fotoğraf seç veya buraya bırak</span>
-                    <img id="img_preview" class="hidden w-full h-40 object-cover rounded-2xl mt-2">
+                <label for="image_input" class="image-dropzone w-full h-48 rounded-[30px] flex flex-col items-center justify-center">
+                    <img id="img_preview" class="hidden">
+                    <div id="upload_placeholder" class="text-center">
+                        <span class="text-4xl mb-2 block">📸</span>
+                        <span id="file_name" class="text-[10px] font-black uppercase text-gray-500 italic">Fotoğraf Seç</span>
+                    </div>
                 </label>
             </div>
 
             <div>
                 <label class="block text-gray-400 text-[10px] font-black uppercase mb-4 tracking-widest">İşin Başlığı</label>
-                <input type="text" id="title" placeholder="Örn: Profesyonel Logo Tasarımı" class="input-field w-full p-6 rounded-[28px] text-white" required>
+                <input type="text" id="title" placeholder="Örn: Profesyonel Çeviri Hizmeti" class="input-field w-full p-6 rounded-[28px] text-white font-medium" required>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -56,25 +57,28 @@
                 </div>
                 <div>
                     <label class="block text-gray-400 text-[10px] font-black uppercase mb-4 tracking-widest">Bütçe / Ücret</label>
-                    <input type="text" id="price" placeholder="Örn: 1.000 TL" class="input-field w-full p-6 rounded-[28px] text-white font-bold" required>
+                    <input type="text" id="price" placeholder="Örn: 2.000 TL" class="input-field w-full p-6 rounded-[28px] text-white font-bold" required>
                 </div>
             </div>
 
             <div class="space-y-4">
                 <label class="block text-green-500 text-[10px] font-black uppercase tracking-widest">WhatsApp Numaranız</label>
-                <input type="text" id="phone_num" placeholder="5XXXXXXXXX" maxlength="10" 
-                       class="input-field w-full p-6 rounded-[28px] text-white font-black tracking-widest" required>
+                <div class="relative">
+                    <input type="text" id="phone_num" placeholder="5XXXXXXXXX" maxlength="10" 
+                           class="input-field w-full p-6 rounded-[28px] text-white font-black tracking-widest border-green-500/10 focus:border-green-500 transition" required>
+                    <span class="absolute right-6 top-1/2 -translate-y-1/2 text-green-500/50 font-black text-[10px] italic">+90</span>
+                </div>
             </div>
 
             <div>
-                <label class="block text-gray-400 text-[10px] font-black uppercase mb-4 tracking-widest">İş Detayları</label>
-                <textarea id="description" rows="5" placeholder="Beklentilerinizi yazın..." 
-                          class="input-field w-full p-6 rounded-[28px] text-white resize-none" required></textarea>
+                <label class="block text-gray-400 text-[10px] font-black uppercase mb-4 tracking-widest">İşin Detayları</label>
+                <textarea id="description" rows="6" placeholder="İşin kapsamını detaylıca açıklayın..." 
+                          class="input-field w-full p-6 rounded-[28px] text-white resize-none leading-relaxed" required></textarea>
             </div>
 
             <button type="submit" id="submitBtn" 
-                    class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-7 rounded-[30px] uppercase italic transition shadow-2xl shadow-blue-900/40 text-lg">
-                İlanı Onaya Gönder 🚀
+                    class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-7 rounded-[30px] uppercase italic transition transform active:scale-95 shadow-2xl shadow-blue-900/40 text-lg tracking-tighter">
+                İlanı Kontrole Gönder ⚡
             </button>
         </form>
     </main>
@@ -86,19 +90,17 @@
 
         const imageInput = document.getElementById('image_input');
         const imgPreview = document.getElementById('img_preview');
-        const previewIcon = document.getElementById('preview_icon');
-        const fileNameLabel = document.getElementById('file_name');
+        const placeholder = document.getElementById('upload_placeholder');
 
-        // Fotoğraf Seçildiğinde Önizleme Göster
+        // Fotoğraf önizleme
         imageInput.onchange = e => {
             const file = e.target.files[0];
             if (file) {
-                fileNameLabel.innerText = file.name;
                 const reader = new FileReader();
                 reader.onload = () => {
                     imgPreview.src = reader.result;
                     imgPreview.classList.remove('hidden');
-                    previewIcon.classList.add('hidden');
+                    placeholder.classList.add('hidden');
                 }
                 reader.readAsDataURL(file);
             }
@@ -112,20 +114,17 @@
 
             try {
                 const { data: { user } } = await supabaseClient.auth.getUser();
-                
-                // 1. FOTOĞRAF YÜKLEME (Varsa)
-                let imageUrl = null;
-                const imageFile = imageInput.files[0];
-                if (imageFile) {
-                    const fileExt = imageFile.name.split('.').pop();
-                    const fileName = `${Math.random()}.${fileExt}`;
-                    const { data: uploadData, error: uploadError } = await supabaseClient
-                        .storage
-                        .from('job-images')
-                        .upload(fileName, imageFile);
 
-                    if (uploadError) throw uploadError;
+                // 1. FOTOĞRAF YÜKLEME
+                let imageUrl = null;
+                const file = imageInput.files[0];
+                if (file) {
+                    const fileName = `${Date.now()}-${file.name}`;
+                    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                        .from('job-images')
+                        .upload(fileName, file);
                     
+                    if (uploadError) throw uploadError;
                     const { data: publicUrl } = supabaseClient.storage.from('job-images').getPublicUrl(fileName);
                     imageUrl = publicUrl.publicUrl;
                 }
@@ -135,8 +134,8 @@
                 const message = encodeURIComponent("Merhaba, Hablen'deki ilanınız için yazıyorum.");
                 const autoLink = `https://wa.me/90${phone}?text=${message}`;
 
-                // 3. VERİTABANINA KAYIT
-                const jobData = {
+                // 3. KAYIT
+                const { error } = await supabaseClient.from('jobs').insert([{
                     user_id: user.id,
                     title: document.getElementById('title').value,
                     category: document.getElementById('category').value,
@@ -145,18 +144,17 @@
                     description: document.getElementById('description').value,
                     image_url: imageUrl,
                     status: 'pending'
-                };
+                }]);
 
-                const { error: insertError } = await supabaseClient.from('jobs').insert([jobData]);
-                if (insertError) throw insertError;
+                if (error) throw error;
 
                 alert("İlan başarıyla onaya gönderildi! ✨");
                 window.location.href = 'profile.html';
 
             } catch (err) {
-                alert("Hata oluştu: " + err.message);
+                alert("Hata: " + err.message);
                 btn.disabled = false;
-                btn.innerText = "İlanı Onaya Gönder 🚀";
+                btn.innerText = "Tekrar Dene";
             }
         });
     </script>
