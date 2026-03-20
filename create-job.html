@@ -3,57 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hablen | İlan Yayınla</title>
+    <title>Hablen | Yeni İlan Oluştur</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: #0D1B2A; color: white; }
-        .input-style { background: #1B263B; border: 2px solid #2D3748; outline: none; transition: all 0.3s; }
-        .input-style:focus { border-color: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
+        .input-field { background: #1B263B; border: 1px solid #2D3748; transition: 0.3s; }
+        .input-field:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 10px rgba(59, 130, 246, 0.2); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen p-6">
 
-    <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#1B263B]">
-        <div onclick="window.location.href='profile.html'" class="text-2xl font-black tracking-tighter uppercase italic cursor-pointer">HABLEN</div>
-        <a href="profile.html" class="text-gray-400 hover:text-white font-bold text-sm">Vazgeç</a>
+    <nav class="max-w-3xl mx-auto flex justify-between items-center mb-12">
+        <div onclick="window.location.href='profile.html'" class="text-2xl font-black uppercase italic cursor-pointer">HABLEN</div>
+        <button onclick="window.location.href='profile.html'" class="text-xs font-bold text-gray-500 uppercase">Vazgeç</button>
     </nav>
 
-    <main class="flex-grow flex items-center justify-center p-6">
-        <div class="max-w-xl w-full bg-[#1B263B] p-8 rounded-3xl shadow-2xl border border-gray-800">
-            <h1 class="text-2xl font-black mb-6 uppercase text-blue-500">Yeni İlan Oluştur</h1>
+    <main class="max-w-2xl mx-auto">
+        <h1 class="text-4xl font-[900] mb-8 uppercase italic tracking-tighter text-white">Yeni İlan <span class="text-blue-500">Yayınla</span></h1>
 
-            <form id="jobForm" class="space-y-5">
-                <div>
-                    <label class="block text-[10px] font-black uppercase text-gray-500 mb-2 tracking-widest">İlan Başlığı</label>
-                    <input type="text" id="jobTitle" required placeholder="Örn: Discord Moderatörü Aranıyor" class="w-full p-4 rounded-xl input-style font-bold">
-                </div>
+        <form id="jobForm" class="space-y-6">
+            <div>
+                <label class="block text-gray-400 text-[10px] font-black uppercase mb-2 tracking-widest">İş Başlığı</label>
+                <input type="text" id="title" placeholder="Örn: Logo Tasarımı Yapılacak" class="input-field w-full p-4 rounded-2xl text-white" required>
+            </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-black uppercase text-gray-500 mb-2 tracking-widest">Kategori</label>
-                        <select id="jobCategory" class="w-full p-4 rounded-xl input-style font-bold appearance-none">
-                            <option value="Dijital">🌐 Dijital Evren</option>
-                            <option value="Saha">🕒 Saha & Part-Time</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-black uppercase text-gray-500 mb-2 tracking-widest">Ücret / Maaş</label>
-                        <input type="text" id="jobPrice" required placeholder="Örn: 1.500 TL / Gün" class="w-full p-4 rounded-xl input-style font-bold">
-                    </div>
-                </div>
+            <div>
+                <label class="block text-gray-400 text-[10px] font-black uppercase mb-2 tracking-widest">Kategori</label>
+                <select id="category" class="input-field w-full p-4 rounded-2xl text-white appearance-none">
+                    <option value="Dijital">Dijital Hizmet</option>
+                    <option value="Fiziksel">Fiziksel İş</option>
+                    <option value="Yazılım">Yazılım / Teknoloji</option>
+                    <option value="Diğer">Diğer</option>
+                </select>
+            </div>
 
-                <div>
-                    <label class="block text-[10px] font-black uppercase text-gray-500 mb-2 tracking-widest">Açıklama</label>
-                    <textarea id="jobDesc" rows="3" required placeholder="Aradığın kriterleri buraya yaz..." class="w-full p-4 rounded-xl input-style text-sm"></textarea>
-                </div>
+            <div>
+                <label class="block text-gray-400 text-[10px] font-black uppercase mb-2 tracking-widest">Bütçe / Fiyat</label>
+                <input type="text" id="price" placeholder="Örn: 1.500 TL" class="input-field w-full p-4 rounded-2xl text-white" required>
+            </div>
 
-                <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-black transition shadow-lg uppercase tracking-widest">
-                    İlanı Yayınla 🚀
-                </button>
-            </form>
-        </div>
+            <div>
+                <label class="block text-yellow-500 text-[10px] font-black uppercase mb-2 tracking-widest">WhatsApp / İletişim Linki</label>
+                <input type="url" id="contact_link" placeholder="Örn: https://wa.me/905000000000" class="input-field w-full p-4 rounded-2xl text-white border-yellow-500/30" required>
+                <p class="text-[9px] text-gray-500 mt-2 italic font-medium tracking-tight">Müşterilerin size ulaşacağı WhatsApp veya Telegram linkini yapıştırın.</p>
+            </div>
+
+            <div>
+                <label class="block text-gray-400 text-[10px] font-black uppercase mb-2 tracking-widest">İş Detayları</label>
+                <textarea id="description" rows="5" placeholder="Yapılacak işi detaylıca anlatın..." class="input-field w-full p-4 rounded-2xl text-white" required></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-[900] py-5 rounded-2xl uppercase italic transition transform active:scale-95 shadow-xl shadow-blue-600/20">
+                İlanı Onaya Gönder 🚀
+            </button>
+        </form>
     </main>
 
     <script>
@@ -61,30 +66,37 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        document.getElementById('jobForm').addEventListener('submit', async (e) => {
+        const jobForm = document.getElementById('jobForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        jobForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.innerText = "Yayınlanıyor...";
-            btn.disabled = true;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerText = "GÖNDERİLİYOR...";
 
             const { data: { user } } = await supabaseClient.auth.getUser();
 
-            const { error } = await supabaseClient.from('jobs').insert([
-                { 
-                    title: document.getElementById('jobTitle').value,
-                    category: document.getElementById('jobCategory').value,
-                    price: document.getElementById('jobPrice').value,
-                    description: document.getElementById('jobDesc').value,
-                    user_id: user.id
-                }
-            ]);
+            const jobData = {
+                user_id: user.id,
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                price: document.getElementById('price').value,
+                contact_link: document.getElementById('contact_link').value,
+                description: document.getElementById('description').value,
+                status: 'pending' // İlan doğrudan onay bekliyor durumunda başlar
+            };
+
+            const { error } = await supabaseClient
+                .from('jobs')
+                .insert([jobData]);
 
             if (error) {
                 alert("Hata oluştu: " + error.message);
-                btn.innerText = "Tekrar Dene";
-                btn.disabled = false;
+                submitBtn.disabled = false;
+                submitBtn.innerText = "İlani Onaya Gönder 🚀";
             } else {
-                alert("İlan başarıyla yayınlandı! 🎉");
+                alert("İlanın başarıyla alındı! Yönetici onayından sonra yayına girecektir. ✨");
                 window.location.href = 'profile.html';
             }
         });
