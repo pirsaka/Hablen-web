@@ -13,8 +13,8 @@
         .job-card:hover { border-color: #3b82f6; transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
         .loader { border-top-color: #3b82f6; animation: spinner 1.5s linear infinite; }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .fav-btn { transition: all 0.2s; }
-        .fav-btn:hover { transform: scale(1.2); color: #ef4444; }
+        .fav-btn { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .fav-active { color: #ef4444 !important; transform: scale(1.2); }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -24,16 +24,16 @@
         <div class="flex items-center gap-4">
             <button onclick="window.location.href='my-profile.html'" class="text-gray-400 hover:text-blue-400 font-bold text-xs uppercase tracking-widest transition">Profilim</button>
             <button onclick="window.location.href='create-job.html'" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-xs font-black transition uppercase shadow-lg">+ İlan Ver</button>
-            <button id="logoutBtn" class="text-red-400 font-bold text-xs">Çıkış</button>
+            <button id="logoutBtn" class="text-red-400 font-bold text-xs hover:underline">Çıkış</button>
         </div>
     </nav>
 
     <main class="max-w-6xl mx-auto p-6">
         <div class="mt-8 mb-12 text-center">
-            <h1 class="text-4xl font-black mb-6 tracking-tight uppercase italic">İş Fırsatlarını <span class="text-blue-500">Keşfet</span></h1>
+            <h1 class="text-4xl font-black mb-6 tracking-tight uppercase italic">Fırsatları <span class="text-blue-500">Yakala</span></h1>
             <div class="relative max-w-2xl mx-auto">
                 <input type="text" id="searchInput" placeholder="İlanlarda ara..." class="w-full p-5 pl-14 rounded-2xl bg-[#1B263B] border-2 border-gray-700 outline-none focus:border-blue-500 text-lg transition-all shadow-2xl text-white">
-                <div class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">🔍</div>
+                <div class="absolute left-5 top-1/2 -translate-y-1/2 text-xl opacity-50">🔍</div>
             </div>
         </div>
 
@@ -42,7 +42,10 @@
         </div>
 
         <div id="jobList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
-        <div id="noJobs" class="hidden text-center my-20"><p class="text-gray-500 font-bold italic">Henüz ilan bulunmuyor.</p></div>
+        
+        <div id="noJobs" class="hidden text-center my-20">
+            <p class="text-gray-500 font-bold italic uppercase tracking-widest text-sm">Henüz yayında ilan bulunmuyor.</p>
+        </div>
     </main>
 
     <script>
@@ -51,14 +54,21 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function fetchJobs() {
-            const { data: jobs, error } = await supabaseClient.from('jobs').select('*').order('created_at', { ascending: false });
+            const { data: jobs, error } = await supabaseClient
+                .from('jobs')
+                .select('*')
+                .order('created_at', { ascending: false });
+
             const loader = document.getElementById('loading');
             const jobList = document.getElementById('jobList');
+            const noJobs = document.getElementById('noJobs');
+
             loader.classList.add('hidden');
 
             if (jobs && jobs.length > 0) {
                 jobList.classList.remove('hidden');
                 jobList.innerHTML = '';
+                
                 jobs.forEach(job => {
                     const isDijital = job.category === 'Dijital';
                     const borderColor = isDijital ? 'border-t-blue-500' : 'border-t-green-500';
@@ -66,37 +76,54 @@
 
                     jobList.innerHTML += `
                         <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-t-4 ${borderColor}">
-                            <button onclick="addToFavorites('${job.id}')" class="fav-btn absolute top-4 right-4 text-gray-600 text-xl">❤</button>
-                            <div>
-                                <div class="flex justify-between items-start mb-4">
-                                    <span class="text-[10px] ${badgeColor} px-2 py-1 rounded font-black uppercase tracking-tighter">${job.category}</span>
+                            <div class="flex justify-between items-center mb-6">
+                                <span class="text-[10px] ${badgeColor} px-2 py-1 rounded font-black uppercase tracking-tighter">${job.category}</span>
+                                <div class="flex items-center gap-3">
                                     <span class="text-[10px] text-gray-500 font-bold uppercase italic">${new Date(job.created_at).toLocaleDateString('tr-TR')}</span>
+                                    <button id="fav-btn-${job.id}" onclick="addToFavorites('${job.id}')" class="fav-btn text-gray-600 text-xl hover:text-red-500 focus:outline-none">
+                                        ❤
+                                    </button>
                                 </div>
-                                <h4 class="font-black text-lg mb-1 leading-tight uppercase italic text-white">${job.title}</h4>
-                                <p class="text-gray-400 text-xs font-medium mb-4 line-clamp-3">${job.description}</p>
                             </div>
-                            <div class="flex items-center justify-between mt-4">
-                                <span class="text-white font-black text-sm italic tracking-tighter">${job.price}</span>
-                                <button onclick="window.location.href='job-details.html?id=${job.id}'" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-blue-500 transition shadow-lg">Detaylar</button>
+                            
+                            <div class="mb-6">
+                                <h4 class="font-black text-xl mb-2 leading-tight uppercase italic text-white">${job.title}</h4>
+                                <p class="text-gray-400 text-xs font-medium line-clamp-2 leading-relaxed">${job.description}</p>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-4 border-t border-white/5">
+                                <span class="text-white font-black text-base italic tracking-tighter underline decoration-blue-500/50 underline-offset-4">${job.price}</span>
+                                <button onclick="window.location.href='job-details.html?id=${job.id}'" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase hover:bg-blue-500 transition shadow-lg transform active:scale-95">
+                                    DETAYLAR
+                                </button>
                             </div>
                         </div>
                     `;
                 });
             } else {
-                document.getElementById('noJobs').classList.remove('hidden');
+                noJobs.classList.remove('hidden');
             }
         }
 
         async function addToFavorites(jobId) {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if(!user) return alert("Önce giriş yapmalısın!");
+            if(!user) return alert("Favorilere eklemek için önce giriş yapmalısın!");
 
-            const { error } = await supabaseClient.from('favorites').insert([{ user_id: user.id, job_id: jobId }]);
+            const btn = document.getElementById(`fav-btn-${jobId}`);
+
+            const { error } = await supabaseClient
+                .from('favorites')
+                .insert([{ user_id: user.id, job_id: jobId }]);
 
             if (error) {
-                if (error.code === '23505') alert("Bu zaten favorilerinde! ❤️");
-                else alert("Hata: " + error.message);
+                if (error.code === '23505') {
+                    alert("Bu ilan zaten favorilerinde! ❤️");
+                    btn.classList.add('fav-active');
+                } else {
+                    alert("Bir hata oluştu: " + error.message);
+                }
             } else {
+                btn.classList.add('fav-active');
                 alert("Favorilere eklendi! ✨");
             }
         }
@@ -108,7 +135,7 @@
         }
 
         document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await supabaseClient.auth.signOut();
+            const { error } = await supabaseClient.auth.signOut();
             window.location.href = 'index.html';
         });
 
