@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hablen | Admin Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0b0f1a; color: white; }
+        .admin-card { background: #161b22; border: 1px solid #30363d; transition: 0.2s; }
+    </style>
+</head>
+<body class="p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-10">
+            <h1 class="text-3xl font-black italic uppercase">Onay Bekleyen <span class="text-yellow-500">İlanlar</span></h1>
+            <button onclick="window.location.href='profile.html'" class="text-xs font-bold text-gray-500">← Siteye Dön</button>
+        </div>
+
+        <div id="adminList" class="grid gap-4">
+            <p class="text-gray-500 italic">Kontrol ediliyor...</p>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://hhxhcbtahzinrbqxgusz.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // BURAYA KENDİ USER ID'Nİ YAZMALISIN (Güvenlik için)
+        const ADMIN_ID = "SENİN_SUPABASE_USER_IDN"; 
+
+        async function loadPendingJobs() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            
+            // Basit Admin Kontrolü
+            if (user.id !== ADMIN_ID) {
+                alert("Yetkisiz Erişim!");
+                window.location.href = 'profile.html';
+                return;
+            }
+
+            const { data: jobs } = await supabaseClient
+                .from('jobs')
+                .select('*')
+                .eq('status', 'pending')
+                .order('created_at', { ascending: false });
+
+            const list = document.getElementById('adminList');
+            list.innerHTML = jobs.length ? '' : '<p class="text-green-500 font-bold">Harika! Onaylanacak ilan kalmadı. 😎</p>';
+
+            jobs.forEach(job => {
+                list.innerHTML += `
+                    <div class="admin-card p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="flex-1">
+                            <span class="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded font-black uppercase mb-2 inline-block">${job.category}</span>
+                            <h3 class="font-bold text-lg leading-tight uppercase italic">${job.title}</h3>
+                            <p class="text-gray-400 text-xs mt-1">${job.description}</p>
+                            <p class="text-blue-400 font-black mt-2 text-sm">${job.price}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="approveJob('${job.id}')" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase transition">Yayınla ✅</button>
+                            <button onclick="rejectJob('${job.id}')" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase transition">Reddet ❌</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function approveJob(id) {
+            await supabaseClient.from('jobs').update({ status: 'approved' }).eq('id', id);
+            loadPendingJobs();
+        }
+
+        async function rejectJob(id) {
+            if(confirm("İlanı reddetmek ve silmek istediğine emin misin?")) {
+                await supabaseClient.from('jobs').delete().eq('id', id);
+                loadPendingJobs();
+            }
+        }
+
+        loadPendingJobs();
+    </script>
+</body>
+</html>
