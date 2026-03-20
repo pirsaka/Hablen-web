@@ -3,59 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hablen | İlan Oluştur</title>
+    <title>Hablen | İlan Yayınla</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0D1B2A; }
+        body { font-family: 'Inter', sans-serif; background: #0D1B2A; color: white; }
         .input-style { background: #1B263B; border: 2px solid #2D3748; outline: none; transition: all 0.3s; }
         .input-style:focus { border-color: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
     </style>
 </head>
-<body class="text-white min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
     <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#1B263B]">
-        <a href="profile.html" class="text-2xl font-black tracking-tighter uppercase italic hover:text-blue-400 transition">
-            HABLEN
-        </a>
+        <div onclick="window.location.href='profile.html'" class="text-2xl font-black tracking-tighter uppercase italic cursor-pointer">HABLEN</div>
         <a href="profile.html" class="text-gray-400 hover:text-white font-bold text-sm">Vazgeç</a>
     </nav>
 
     <main class="flex-grow flex items-center justify-center p-6">
-        <div class="max-w-2xl w-full bg-[#1B263B] p-8 md:p-12 rounded-3xl shadow-2xl border border-gray-800">
-            <h1 class="text-3xl font-black mb-2 uppercase tracking-tight text-blue-500">Yeni İlan Oluştur</h1>
-            <p class="text-gray-400 mb-8 font-medium italic text-sm">Dijital dünyadaki yetenekleri yakala!</p>
+        <div class="max-w-xl w-full bg-[#1B263B] p-8 rounded-3xl shadow-2xl border border-gray-800">
+            <h1 class="text-2xl font-black mb-6 uppercase text-blue-500">Yeni İlan Oluştur</h1>
 
-            <form id="jobForm" class="space-y-6">
+            <form id="jobForm" class="space-y-5">
                 <div>
-                    <label class="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">İlan Başlığı</label>
-                    <input type="text" id="jobTitle" required placeholder="Örn: Discord Moderatörü Aranıyor" class="w-full p-4 rounded-xl input-style text-white font-bold">
+                    <label class="block text-[10px] font-black uppercase text-gray-500 mb-2 tracking-widest">İlan Başlığı</label>
+                    <input type="text" id="jobTitle" required placeholder="Örn: Discord Moderatörü Aranıyor" class="w-full p-4 rounded-xl input-style font-bold">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Kategori</label>
-                        <select id="jobCategory" class="w-full p-4 rounded-xl input-style text-white font-bold appearance-none">
-                            <option value="Discord">💬 Discord</option>
-                            <option value="Gaming">🎮 Gaming / Oyun</option>
-                            <option value="Software">💻 Yazılım / Teknoloji</option>
-                            <option value="Editing">🎥 Yayın / Editörlük</option>
-                            <option value="Other">✨ Diğer</option>
+                        <label class="block text-[10px] font-black uppercase text-gray-500 mb-2 tracking-widest">Kategori</label>
+                        <select id="jobCategory" class="w-full p-4 rounded-xl input-style font-bold appearance-none">
+                            <option value="Dijital">🌐 Dijital Evren</option>
+                            <option value="Saha">🕒 Saha & Part-Time</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Ücret / Maaş</label>
-                        <input type="text" id="jobPrice" required placeholder="Örn: 5.000 TL / Ay" class="w-full p-4 rounded-xl input-style text-white font-bold">
+                        <label class="block text-[10px] font-black uppercase text-gray-500 mb-2 tracking-widest">Ücret / Maaş</label>
+                        <input type="text" id="jobPrice" required placeholder="Örn: 1.500 TL / Gün" class="w-full p-4 rounded-xl input-style font-bold">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Detaylı Açıklama</label>
-                    <textarea id="jobDesc" rows="4" required placeholder="İşin detaylarını ve aradığın kriterleri buraya yaz..." class="w-full p-4 rounded-xl input-style text-white font-medium"></textarea>
+                    <label class="block text-[10px] font-black uppercase text-gray-500 mb-2 tracking-widest">Açıklama</label>
+                    <textarea id="jobDesc" rows="3" required placeholder="Aradığın kriterleri buraya yaz..." class="w-full p-4 rounded-xl input-style text-sm"></textarea>
                 </div>
 
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-5 rounded-2xl font-black text-xl transition transform active:scale-95 shadow-xl uppercase tracking-widest">
+                <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-black transition shadow-lg uppercase tracking-widest">
                     İlanı Yayınla 🚀
                 </button>
             </form>
@@ -69,15 +63,30 @@
 
         document.getElementById('jobForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const title = document.getElementById('jobTitle').value;
-            const category = document.getElementById('jobCategory').value;
-            const price = document.getElementById('jobPrice').value;
-            const desc = document.getElementById('jobDesc').value;
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Yayınlanıyor...";
+            btn.disabled = true;
 
-            // Şimdilik sadece ana sayfaya yönlendiriyoruz (Veritabanı kaydı için tablo oluşturmamız gerekecek)
-            alert("Harika! İlanın inceleniyor ve yakında yayınlanacak.");
-            window.location.href = 'profile.html';
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            const { error } = await supabaseClient.from('jobs').insert([
+                { 
+                    title: document.getElementById('jobTitle').value,
+                    category: document.getElementById('jobCategory').value,
+                    price: document.getElementById('jobPrice').value,
+                    description: document.getElementById('jobDesc').value,
+                    user_id: user.id
+                }
+            ]);
+
+            if (error) {
+                alert("Hata oluştu: " + error.message);
+                btn.innerText = "Tekrar Dene";
+                btn.disabled = false;
+            } else {
+                alert("İlan başarıyla yayınlandı! 🎉");
+                window.location.href = 'profile.html';
+            }
         });
     </script>
 </body>
