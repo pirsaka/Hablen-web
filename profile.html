@@ -13,8 +13,6 @@
         .job-card:hover { border-color: #3b82f6; transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
         .loader { border-top-color: #3b82f6; animation: spinner 1.5s linear infinite; }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* Kalp Butonu Efektleri */
         .fav-btn { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
         .fav-btn:active { transform: scale(0.7); }
         .fav-active { color: #ef4444 !important; transform: scale(1.2); filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.5)); }
@@ -45,7 +43,7 @@
         </div>
 
         <div id="jobList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
-        <div id="noJobs" class="hidden text-center my-20"><p class="text-gray-500 font-bold italic uppercase tracking-widest text-sm">İlan bulunamadı.</p></div>
+        <div id="noJobs" class="hidden text-center my-20"><p class="text-gray-500 font-bold italic uppercase tracking-widest text-sm">Onaylı ilan bulunamadı.</p></div>
     </main>
 
     <script>
@@ -55,9 +53,14 @@
 
         async function fetchJobs() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            const { data: jobs, error } = await supabaseClient.from('jobs').select('*').order('created_at', { ascending: false });
             
-            // Kullanıcının mevcut favorilerini al (Kalplerin başlangıç rengi için)
+            // 🔥 KRİTİK DEĞİŞİKLİK BURADA: .eq('status', 'approved') ekledik
+            const { data: jobs, error } = await supabaseClient
+                .from('jobs')
+                .select('*')
+                .eq('status', 'approved') 
+                .order('created_at', { ascending: false });
+            
             const { data: userFavs } = await supabaseClient.from('favorites').select('job_id').eq('user_id', user.id);
             const favIds = userFavs ? userFavs.map(f => f.job_id) : [];
 
@@ -89,7 +92,7 @@
                             
                             <div class="mb-6">
                                 <h4 class="font-black text-xl mb-2 leading-tight uppercase italic text-white">${job.title}</h4>
-                                <p class="text-gray-400 text-xs font-medium line-clamp-2">${job.description}</p>
+                                <p class="text-gray-400 text-xs font-medium line-clamp-2 leading-relaxed">${job.description}</p>
                             </div>
 
                             <div class="flex items-center justify-between pt-4 border-t border-white/5">
@@ -109,18 +112,12 @@
         async function toggleFavorite(jobId) {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if(!user) return;
-
             const btn = document.getElementById(`fav-btn-${jobId}`);
-            
-            // Mevcut durumu kontrol et
             const isFav = btn.classList.contains('fav-active');
-
             if (isFav) {
-                // Favoriden Çıkar
                 btn.classList.remove('fav-active');
                 await supabaseClient.from('favorites').delete().eq('user_id', user.id).eq('job_id', jobId);
             } else {
-                // Favoriye Ekle
                 btn.classList.add('fav-active');
                 await supabaseClient.from('favorites').insert([{ user_id: user.id, job_id: jobId }]);
             }
