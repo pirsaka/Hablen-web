@@ -30,17 +30,18 @@
 <body class="min-h-screen pb-20">
 
     <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#0D1B2A] sticky top-0 z-50">
-        <div class="text-2xl font-[900] uppercase italic tracking-tighter">HABLEN</div>
-        <div class="flex gap-4">
-            <button onclick="window.location.href='admin-panel.html'" class="text-[10px] font-black uppercase tracking-widest text-blue-400">Panel</button>
-            <button onclick="window.location.href='create-job.html'" class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase italic shadow-lg shadow-blue-600/20">+ İlan Ver</button>
+        <div onclick="window.location.href='profile.html'" class="text-2xl font-[900] uppercase italic tracking-tighter cursor-pointer">HABLEN</div>
+        <div class="flex items-center gap-6">
+            <button id="adminPanelBtn" onclick="window.location.href='admin-panel.html'" class="hidden text-[10px] font-black uppercase tracking-widest text-blue-400 hover:text-blue-300 transition">Panel</button>
+            
+            <button onclick="window.location.href='create-job.html'" class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase italic shadow-lg shadow-blue-600/20 hover:bg-blue-500 transition">+ İlan Ver</button>
         </div>
     </nav>
 
     <header class="max-w-6xl mx-auto p-6 mt-10 text-center">
-        <h1 class="text-5xl md:text-7xl font-[900] uppercase italic tracking-tighter mb-8">Fırsatları <span class="text-blue-500">Yakala</span></h1>
+        <h1 class="text-5xl md:text-7xl font-[900] uppercase italic tracking-tighter mb-8 text-white">Fırsatları <span class="text-blue-500">Yakala</span></h1>
         <div class="relative max-w-xl mx-auto">
-            <input type="text" placeholder="İlanlarda ara..." class="w-full bg-[#1B263B] p-5 rounded-[24px] border border-gray-800 outline-none focus:border-blue-500 transition text-sm">
+            <input type="text" id="searchInput" placeholder="İlanlarda ara..." class="w-full bg-[#1B263B] p-5 rounded-[24px] border border-gray-800 outline-none focus:border-blue-500 transition text-sm text-white">
             <span class="absolute right-6 top-1/2 -translate-y-1/2 opacity-50 text-xl">🔍</span>
         </div>
     </header>
@@ -58,23 +59,33 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // BURAYA KENDİ ADMİN E-POSTA ADRESİNİ YAZ
+        const ADMIN_EMAIL = "admin@example.com"; 
+
+        async function checkAdmin() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user && user.email === ADMIN_EMAIL) {
+                // Eğer kullanıcı admin ise butonu göster
+                document.getElementById('adminPanelBtn').classList.remove('hidden');
+            }
+        }
+
         async function fetchJobs() {
             const { data: jobs, error } = await supabaseClient
                 .from('jobs')
                 .select('*')
-                .eq('status', 'approved') // Sadece onaylı ilanları göster
+                .eq('status', 'approved')
                 .order('created_at', { ascending: false });
 
             const jobList = document.getElementById('jobList');
             jobList.innerHTML = '';
 
-            if (error || jobs.length === 0) {
+            if (error || !jobs || jobs.length === 0) {
                 jobList.innerHTML = '<p class="col-span-full text-center text-gray-500 py-20 font-black italic uppercase">Henüz yayında ilan yok.</p>';
                 return;
             }
 
             jobs.forEach(job => {
-                // FOTOĞRAF KONTROLÜ
                 const imageHtml = job.image_url 
                     ? `<img src="${job.image_url}" class="w-full h-48 object-cover rounded-[24px] mb-5 border border-white/5 shadow-inner">` 
                     : '';
@@ -93,9 +104,7 @@
                                     <span class="text-gray-600 hover:text-red-500 transition cursor-pointer text-xs">❤️</span>
                                 </div>
                             </div>
-
                             ${imageHtml}
-
                             <h3 class="text-2xl font-[900] uppercase italic leading-[0.85] mb-3 tracking-tighter text-white">
                                 ${job.title}
                             </h3>
@@ -103,7 +112,6 @@
                                 ${job.description}
                             </p>
                         </div>
-                        
                         <div class="flex justify-between items-center pt-5 border-t border-white/5 mt-auto">
                             <div>
                                 <p class="text-[8px] text-gray-600 font-black uppercase tracking-widest">Bütçe</p>
@@ -119,6 +127,8 @@
             });
         }
 
+        // Sayfa açıldığında hem admini kontrol et hem ilanları çek
+        checkAdmin();
         fetchJobs();
     </script>
 </body>
