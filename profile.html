@@ -3,23 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hablen | Keşfet</title>
+    <title>Hablen | İlan Panosu</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0D1B2A; }
+        body { font-family: 'Inter', sans-serif; background: #0D1B2A; color: white; }
         .job-card { background: #1B263B; border: 1px solid #2D3748; transition: all 0.3s ease; }
         .job-card:hover { border-color: #3b82f6; transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        .category-card { transition: all 0.3s; border: 2px solid transparent; cursor: pointer; }
-        .category-card:hover { border-color: #3b82f6; transform: scale(1.02); }
-        .search-input:focus { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+        .loader { border-top-color: #3b82f6; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="text-white min-h-screen pb-20">
+<body class="min-h-screen pb-20">
 
     <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#1B263B] sticky top-0 z-50">
-        <a href="index.html" class="text-2xl font-black tracking-tighter uppercase italic hover:text-blue-400 transition">HABLEN</a>
+        <div onclick="window.location.href='index.html'" class="text-2xl font-black tracking-tighter uppercase italic cursor-pointer hover:text-blue-400 transition">HABLEN</div>
         <div class="flex items-center gap-4">
             <button onclick="window.location.href='create-job.html'" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-xs font-black transition uppercase shadow-lg">
                 + İlan Ver
@@ -31,80 +30,23 @@
     <main class="max-w-6xl mx-auto p-6">
         
         <div class="mt-8 mb-12 text-center">
-            <h1 class="text-4xl font-black mb-6 tracking-tight uppercase italic">Fırsatları <span class="text-blue-500">Yakala.</span></h1>
-            <div class="relative max-w-2xl mx-auto group">
-                <input type="text" placeholder="TikTok Editörü, Konser Personeli, Discord Mod..." 
-                       class="search-input w-full p-5 pl-14 rounded-2xl bg-[#1B263B] border-2 border-gray-700 outline-none focus:border-blue-500 text-lg transition-all shadow-2xl">
+            <h1 class="text-4xl font-black mb-6 tracking-tight uppercase italic">İş Fırsatlarını <span class="text-blue-500">Keşfet</span></h1>
+            <div class="relative max-w-2xl mx-auto">
+                <input type="text" id="searchInput" placeholder="İlanlarda ara..." 
+                       class="w-full p-5 pl-14 rounded-2xl bg-[#1B263B] border-2 border-gray-700 outline-none focus:border-blue-500 text-lg transition-all shadow-2xl">
                 <div class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">🔍</div>
-                <button class="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 px-6 py-2 rounded-xl font-black text-sm hover:bg-blue-700 transition">ARA</button>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            <div class="category-card p-6 rounded-3xl bg-gradient-to-br from-[#1B263B] to-[#0D1B2A] border border-gray-700">
-                <div class="flex items-center gap-4 mb-3">
-                    <span class="text-3xl">🌐</span>
-                    <h2 class="font-black text-xl uppercase tracking-tighter">Dijital Evren</h2>
-                </div>
-                <p class="text-blue-400 text-[10px] font-black tracking-widest uppercase">Sosyal Medya • Uzaktan • Editörlük</p>
-            </div>
-
-            <div class="category-card p-6 rounded-3xl bg-gradient-to-br from-[#1B263B] to-[#0D1B2A] border border-gray-700">
-                <div class="flex items-center gap-4 mb-3">
-                    <span class="text-3xl">🕒</span>
-                    <h2 class="font-black text-xl uppercase tracking-tighter">Saha & Part-Time</h2>
-                </div>
-                <p class="text-green-500 text-[10px] font-black tracking-widest uppercase">Etkinlik • Günlük • Cafe/Saha</p>
-            </div>
+        <div id="loading" class="flex justify-center my-20">
+            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-700 h-12 w-12"></div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
-            <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-t-4 border-t-blue-500">
-                <div>
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded font-black uppercase tracking-tighter">Dijital</span>
-                        <span class="text-[10px] text-gray-500 font-bold uppercase italic">Uzaktan</span>
-                    </div>
-                    <h4 class="font-black text-lg mb-1 leading-tight">Reels / Shorts Editörü</h4>
-                    <p class="text-gray-400 text-xs font-bold mb-4 italic">Ajans Hablen</p>
-                </div>
-                <div class="flex items-center justify-between mt-4">
-                    <span class="text-white font-black text-sm italic tracking-tighter">₺7.500 / Ay</span>
-                    <button class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-blue-500 transition shadow-lg">Başvur</button>
-                </div>
+        <div id="jobList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
             </div>
 
-            <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-t-4 border-t-green-500">
-                <div>
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] bg-green-500/10 text-green-400 px-2 py-1 rounded font-black uppercase tracking-tighter">Saha</span>
-                        <span class="text-[10px] text-gray-500 font-bold uppercase italic text-right">Kadıköy, İst.</span>
-                    </div>
-                    <h4 class="font-black text-lg mb-1 leading-tight">Tanıtım & Stand Personeli</h4>
-                    <p class="text-gray-400 text-xs font-bold mb-4 italic">Global Events</p>
-                </div>
-                <div class="flex items-center justify-between mt-4">
-                    <span class="text-white font-black text-sm italic tracking-tighter">₺1.500 / Günlük</span>
-                    <button class="bg-green-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-green-500 transition shadow-lg">Detay</button>
-                </div>
-            </div>
-
-            <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-t-4 border-t-blue-500">
-                <div>
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded font-black uppercase tracking-tighter">Dijital</span>
-                        <span class="text-[10px] text-gray-500 font-bold uppercase italic text-right">Discord</span>
-                    </div>
-                    <h4 class="font-black text-lg mb-1 leading-tight">Sunucu Moderatörü</h4>
-                    <p class="text-gray-400 text-xs font-bold mb-4 italic">Crypto Hub</p>
-                </div>
-                <div class="flex items-center justify-between mt-4">
-                    <span class="text-white font-black text-sm italic tracking-tighter">₺5.000 / Ay</span>
-                    <button class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-blue-500 transition shadow-lg">Başvur</button>
-                </div>
-            </div>
-
+        <div id="noJobs" class="hidden text-center my-20">
+            <p class="text-gray-500 font-bold italic">Henüz ilan bulunmuyor. İlk ilanı sen ver!</p>
         </div>
     </main>
 
@@ -113,9 +55,60 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        async function fetchJobs() {
+            const { data: jobs, error } = await supabaseClient
+                .from('jobs')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const loader = document.getElementById('loading');
+            const jobList = document.getElementById('jobList');
+            const noJobs = document.getElementById('noJobs');
+
+            loader.classList.add('hidden');
+
+            if (error) {
+                console.error("Hata:", error);
+                return;
+            }
+
+            if (jobs.length === 0) {
+                noJobs.classList.remove('hidden');
+                return;
+            }
+
+            jobList.classList.remove('hidden');
+            jobList.innerHTML = '';
+
+            jobs.forEach(job => {
+                const isDijital = job.category === 'Dijital';
+                const borderColor = isDijital ? 'border-t-blue-500' : 'border-t-green-500';
+                const badgeColor = isDijital ? 'bg-blue-500/10 text-blue-400' : 'bg-green-500/10 text-green-400';
+
+                const card = `
+                    <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-t-4 ${borderColor}">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="text-[10px] ${badgeColor} px-2 py-1 rounded font-black uppercase tracking-tighter">${job.category}</span>
+                                <span class="text-[10px] text-gray-500 font-bold uppercase italic">${new Date(job.created_at).toLocaleDateString('tr-TR')}</span>
+                            </div>
+                            <h4 class="font-black text-lg mb-1 leading-tight uppercase italic">${job.title}</h4>
+                            <p class="text-gray-400 text-xs font-medium mb-4 line-clamp-3">${job.description}</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-4">
+                            <span class="text-white font-black text-sm italic tracking-tighter">${job.price}</span>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-blue-500 transition shadow-lg">Detaylar</button>
+                        </div>
+                    </div>
+                `;
+                jobList.innerHTML += card;
+            });
+        }
+
         async function checkUser() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if (!user) window.location.href = 'login.html';
+            else fetchJobs();
         }
 
         document.getElementById('logoutBtn').addEventListener('click', async () => {
