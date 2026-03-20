@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hablen | Profilim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0D1B2A; color: white; }
+        .tab-btn { border-bottom: 2px solid transparent; transition: all 0.3s; }
+        .tab-btn.active { border-color: #3b82f6; color: #3b82f6; }
+        .job-card { background: #1B263B; border: 1px solid #2D3748; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#1B263B]">
+        <div onclick="window.location.href='profile.html'" class="text-2xl font-black uppercase italic cursor-pointer">HABLEN</div>
+        <button onclick="window.location.href='profile.html'" class="text-sm font-bold text-gray-400">← Geri Dön</button>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-6">
+        <h1 class="text-3xl font-black mb-8 italic uppercase italic">Profil Paneli</h1>
+
+        <div class="flex gap-8 mb-8">
+            <button onclick="switchTab('my-jobs')" id="tab-jobs" class="tab-btn active pb-2 font-black uppercase text-xs tracking-widest">İlanlarım</button>
+            <button onclick="switchTab('my-favs')" id="tab-favs" class="tab-btn pb-2 font-black uppercase text-xs tracking-widest">Favorilerim</button>
+        </div>
+
+        <div id="content-jobs" class="grid gap-4"></div>
+        <div id="content-favs" class="hidden grid gap-4"></div>
+    </main>
+
+    <script>
+        const SUPABASE_URL = 'https://hhxhcbtahzinrbqxgusz.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        function switchTab(tab) {
+            document.getElementById('content-jobs').classList.add('hidden');
+            document.getElementById('content-favs').classList.add('hidden');
+            document.getElementById('tab-jobs').classList.remove('active');
+            document.getElementById('tab-favs').classList.remove('active');
+
+            if(tab === 'my-jobs') {
+                document.getElementById('content-jobs').classList.remove('hidden');
+                document.getElementById('tab-jobs').classList.add('active');
+            } else {
+                document.getElementById('content-favs').classList.remove('hidden');
+                document.getElementById('tab-favs').classList.add('active');
+            }
+        }
+
+        async function loadProfile() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            // Kendi İlanlarım
+            const { data: myJobs } = await supabaseClient.from('jobs').select('*').eq('user_id', user.id);
+            const jobsDiv = document.getElementById('content-jobs');
+            jobsDiv.innerHTML = myJobs.length ? '' : '<p class="text-gray-500">Henüz ilan vermedin.</p>';
+            myJobs.forEach(job => {
+                jobsDiv.innerHTML += `
+                    <div class="job-card p-5 rounded-2xl flex justify-between items-center">
+                        <div><h4 class="font-bold uppercase italic">${job.title}</h4><p class="text-xs text-gray-400">${job.price}</p></div>
+                        <button onclick="deleteJob('${job.id}')" class="text-red-500 font-bold text-[10px] uppercase">Sil</button>
+                    </div>`;
+            });
+
+            // Favorilerim (Joins kullanarak)
+            const { data: favs } = await supabaseClient.from('favorites').select('id, job_id, jobs(title, price)').eq('user_id', user.id);
+            const favsDiv = document.getElementById('content-favs');
+            favsDiv.innerHTML = favs.length ? '' : '<p class="text-gray-500">Favori ilanın yok.</p>';
+            favs.forEach(fav => {
+                if(fav.jobs) {
+                    favsDiv.innerHTML += `
+                        <div class="job-card p-5 rounded-2xl flex justify-between items-center">
+                            <div><h4 class="font-bold uppercase italic">${fav.jobs.title}</h4><p class="text-xs text-gray-400">${fav.jobs.price}</p></div>
+                            <button onclick="removeFav('${fav.id}')" class="text-gray-500 font-bold text-[10px] uppercase">Kaldır</button>
+                        </div>`;
+                }
+            });
+        }
+
+        async function deleteJob(id) {
+            if(confirm("Silmek istediğine emin misin?")) {
+                await supabaseClient.from('jobs').delete().eq('id', id);
+                loadProfile();
+            }
+        }
+
+        async function removeFav(favId) {
+            await supabaseClient.from('favorites').delete().eq('id', favId);
+            loadProfile();
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>
