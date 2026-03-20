@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hablen | İlan Detayı</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0D1B2A; color: white; }
+        .glass-panel { background: #1B263B; border: 1px solid #2D3748; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <nav class="p-6 border-b border-gray-800 bg-[#1B263B]">
+        <div onclick="window.location.href='profile.html'" class="text-2xl font-black tracking-tighter uppercase italic cursor-pointer">HABLEN</div>
+    </nav>
+
+    <main class="max-w-3xl mx-auto w-full p-6 mt-10">
+        <div id="jobDetail" class="glass-panel p-8 rounded-[40px] shadow-2xl relative overflow-hidden">
+            <div id="detailLoading" class="text-center py-20 font-bold italic animate-pulse text-blue-500">İlan Detayları Yükleniyor...</div>
+        </div>
+
+        <button onclick="window.location.href='profile.html'" class="mt-8 text-gray-500 hover:text-white font-bold transition flex items-center gap-2">
+            ← İlanlara Geri Dön
+        </button>
+    </main>
+
+    <script>
+        const SUPABASE_URL = 'https://hhxhcbtahzinrbqxgusz.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function loadJobDetail() {
+            // URL'den ID'yi alıyoruz (job-details.html?id=xxx)
+            const urlParams = new URLSearchParams(window.location.search);
+            const jobId = urlParams.get('id');
+
+            if (!jobId) {
+                window.location.href = 'profile.html';
+                return;
+            }
+
+            const { data: job, error } = await supabaseClient
+                .from('jobs')
+                .select('*')
+                .eq('id', jobId)
+                .single();
+
+            const container = document.getElementById('jobDetail');
+
+            if (error || !job) {
+                container.innerHTML = `<p class="text-red-400 font-bold text-center">İlan bulunamadı!</p>`;
+                return;
+            }
+
+            const isDijital = job.category === 'Dijital';
+            const accentColor = isDijital ? 'text-blue-400' : 'text-green-400';
+
+            container.innerHTML = `
+                <div class="mb-6">
+                    <span class="text-[10px] bg-white/10 px-3 py-1 rounded-full font-black uppercase tracking-widest ${accentColor}">${job.category}</span>
+                </div>
+                <h1 class="text-4xl font-[950] uppercase italic mb-4 leading-none">${job.title}</h1>
+                <div class="flex items-center gap-4 mb-8">
+                    <span class="text-2xl font-black ${accentColor}">${job.price}</span>
+                    <span class="text-xs text-gray-500 font-bold tracking-widest uppercase italic">Yayınlanma: ${new Date(job.created_at).toLocaleDateString('tr-TR')}</span>
+                </div>
+                
+                <div class="border-t border-gray-800 pt-8">
+                    <h3 class="text-xs font-black uppercase tracking-[0.3em] text-gray-500 mb-4 italic italic">İş Açıklaması</h3>
+                    <p class="text-gray-300 leading-relaxed font-medium whitespace-pre-line">${job.description}</p>
+                </div>
+
+                <div class="mt-12">
+                    <button class="w-full bg-white text-black py-5 rounded-2xl font-black text-lg uppercase tracking-widest hover:bg-blue-500 hover:text-white transition transform active:scale-95 shadow-xl">
+                        İlana Başvur / İletişime Geç ⚡
+                    </button>
+                </div>
+            `;
+        }
+
+        loadJobDetail();
+    </script>
+</body>
+</html>
