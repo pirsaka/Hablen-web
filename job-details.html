@@ -22,6 +22,7 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
         }
+        #jobImage { width: 100%; max-height: 450px; object-fit: cover; border-radius: 32px; }
     </style>
 </head>
 <body class="min-h-screen pb-10">
@@ -40,9 +41,13 @@
         <div id="jobDetail" class="hidden">
             <div class="detail-card p-8 md:p-12 rounded-[40px] relative overflow-hidden">
                 
-                <div class="flex justify-between items-center mb-10">
+                <div class="flex justify-between items-center mb-8">
                     <span id="category" class="bg-blue-500/10 text-blue-400 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-blue-500/20">Kategori</span>
                     <span id="date" class="text-gray-500 text-[10px] font-bold uppercase italic opacity-60">00.00.0000</span>
+                </div>
+
+                <div id="imageContainer" class="hidden mb-10 overflow-hidden shadow-2xl">
+                    <img id="jobImage" src="" alt="İş Görseli">
                 </div>
 
                 <h1 id="title" class="text-4xl md:text-5xl font-black uppercase italic leading-[0.9] mb-8 tracking-tighter text-white">İlan Başlığı</h1>
@@ -97,7 +102,6 @@
 
             if(error || !job) {
                 console.error("Hata:", error);
-                alert("İlan yüklenirken bir sorun oluştu veya ilan kaldırıldı.");
                 window.location.href = 'profile.html';
                 return;
             }
@@ -109,17 +113,20 @@
             document.getElementById('category').innerText = job.category;
             document.getElementById('date').innerText = new Date(job.created_at).toLocaleDateString('tr-TR');
             
-            // Başvuru butonu kontrolü
+            // 🛠 FOTOĞRAF KONTROLÜ 🛠
+            const imgContainer = document.getElementById('imageContainer');
+            const jobImg = document.getElementById('jobImage');
+            if (job.image_url) {
+                jobImg.src = job.image_url;
+                imgContainer.classList.remove('hidden');
+            }
+
+            // Başvuru butonu linki
             const applyBtn = document.getElementById('applyBtn');
             if(job.contact_link) {
-                // Linkin başına https eklenmemişse ekleyelim
-                let link = job.contact_link;
-                if (!link.startsWith('http')) link = 'https://' + link;
-                applyBtn.href = link;
+                applyBtn.href = job.contact_link;
             } else {
-                applyBtn.innerHTML = "İLETİŞİM BİLGİSİ YOK";
-                applyBtn.classList.replace('btn-gradient', 'bg-gray-800');
-                applyBtn.style.pointerEvents = 'none';
+                applyBtn.style.display = 'none';
             }
 
             // Arayüzü göster
