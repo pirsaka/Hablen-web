@@ -3,51 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hablen | Geleceğini Keşfet</title>
+    <title>Hablen | Yeteneğini Kazanca Dönüştür</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .bg-gradient {
-            background: radial-gradient(circle at top right, #1e3a8a, #0d1b2a 50%, #000000);
-        }
+        body { font-family: 'Inter', sans-serif; background: #0D1B2A; color: white; overflow-x: hidden; }
+        .glow-text { text-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+        .glass-card { background: rgba(27, 38, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        .btn-gradient { background: linear-gradient(90deg, #3b82f6, #2dd4bf); transition: all 0.3s ease; }
+        .btn-gradient:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(59, 130, 246, 0.4); }
     </style>
 </head>
-<body class="bg-gradient text-white min-h-screen flex flex-col">
+<body>
 
-    <nav class="p-6 flex justify-between items-center max-w-7xl mx-auto w-full">
-        <a href="index.html" class="text-3xl font-black tracking-tighter uppercase italic hover:text-blue-500 transition duration-300">
-            HABLEN
-        </a>
-        
-        <div class="space-x-4">
-            <a href="login.html" class="text-sm font-bold hover:text-blue-400 transition">Giriş Yap</a>
-            <a href="register.html" class="bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-full text-sm font-bold transition shadow-lg">Ücretsiz Başla</a>
+    <nav class="fixed top-0 w-full z-50 p-6 flex justify-between items-center backdrop-blur-md border-b border-white/5">
+        <div class="text-2xl font-black tracking-tighter uppercase italic text-white">HABLEN</div>
+        <div class="flex gap-4">
+            <a href="login.html" class="px-6 py-2 text-sm font-bold hover:text-blue-400 transition">Giriş</a>
+            <a href="register.html" class="px-6 py-2 bg-white text-black rounded-full text-sm font-black hover:bg-blue-500 hover:text-white transition">KAYIT OL</a>
         </div>
     </nav>
 
-    <main class="flex-grow flex flex-col items-center justify-center text-center px-6">
-        <div class="max-w-3xl">
-            <h1 class="text-6xl md:text-8xl font-black mb-6 tracking-tight leading-none">
-                YETENEĞİNİ <br><span class="text-blue-500">ATEŞLE.</span>
-            </h1>
-            <p class="text-xl md:text-2xl text-gray-400 mb-10 font-medium">
-                Hablen ile potansiyelini keşfet, testleri çöz ve sana en uygun kariyer yolculuğuna bugün başla.
-            </p>
+    <section class="relative pt-44 pb-32 px-6">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none -z-10">
+            <div class="absolute top-20 left-1/4 w-72 h-72 bg-blue-600/20 rounded-full blur-[120px]"></div>
+            <div class="absolute bottom-10 right-1/4 w-80 h-80 bg-emerald-600/20 rounded-full blur-[150px]"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full glass-card">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <span class="text-gray-300 text-[10px] font-black tracking-[0.3em] uppercase italic">Yeni Nesil Yetenek Pazarı</span>
+            </div>
             
-            <div class="flex flex-col md:flex-row gap-4 justify-center">
-                <button onclick="window.location.href='register.html'" class="px-10 py-5 bg-white text-black rounded-2xl font-black text-xl hover:bg-blue-600 hover:text-white transition duration-300 shadow-2xl transform hover:scale-105 active:scale-95">
-                    ŞİMDİ KEŞFET
+            <h1 class="text-6xl md:text-[110px] font-[950] tracking-tighter leading-[0.85] mb-10 uppercase italic">
+                YETENEĞİNİ <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-blue-600 to-emerald-400 glow-text">
+                    KAZANCA
+                </span> 
+                DÖNÜŞTÜR.
+            </h1>
+
+            <p class="max-w-2xl mx-auto text-gray-400 text-lg md:text-2xl font-medium mb-12 leading-tight">
+                Hablen ile ister <span class="text-white">sosyal medya dünyasında</span> parla, 
+                ister <span class="text-white">sahada part-time</span> işini bul. 
+                Potansiyelini nakite çevirmenin en hızlı yolu.
+            </p>
+
+            <div class="flex flex-col md:flex-row items-center justify-center gap-6">
+                <button onclick="window.location.href='register.html'" class="btn-gradient px-12 py-6 text-white font-black rounded-2xl uppercase italic tracking-widest text-lg shadow-2xl">
+                    ŞİMDİ KEŞFET ⚡
                 </button>
-                <button onclick="window.location.href='about.html'" class="px-10 py-5 bg-transparent border-2 border-gray-700 rounded-2xl font-bold text-xl hover:border-blue-500 transition duration-300 shadow-md">
-                    Nasıl Çalışır?
-                </button>
+                <div class="flex items-center gap-4 text-left border-l-2 border-gray-800 pl-6">
+                    <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none italic">
+                        +500 Aktif İlan<br><span class="text-gray-300">Seni Bekliyor</span>
+                    </p>
+                </div>
             </div>
         </div>
-    </main>
+    </section>
 
-    <footer class="p-10 text-center text-gray-600 text-sm">
-        © 2026 Hablen Technology. Tüm hakları saklıdır.
+    <section class="max-w-6xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="glass-card p-10 rounded-[40px] border border-blue-500/20 group hover:border-blue-500 transition-all">
+            <div class="text-5xl mb-6">🌐</div>
+            <h3 class="text-3xl font-black uppercase italic mb-4">Dijital Evren</h3>
+            <p class="text-gray-400 font-medium mb-6">Discord moderatörlüğü, sosyal medya yönetimi ve video editörlüğü. Oturduğun yerden dünyaya çalış.</p>
+            <ul class="text-sm font-bold text-blue-400 space-y-2 uppercase tracking-tighter">
+                <li>• İçerik Üretimi</li>
+                <li>• Topluluk Yönetimi</li>
+                <li>• Remote Asistanlık</li>
+            </ul>
+        </div>
+
+        <div class="glass-card p-10 rounded-[40px] border border-emerald-500/20 group hover:border-emerald-500 transition-all">
+            <div class="text-5xl mb-6">🕒</div>
+            <h3 class="text-3xl font-black uppercase italic mb-4">Saha & Part-Time</h3>
+            <p class="text-gray-400 font-medium mb-6">Konser personeli, stand tanıtımı veya günlük cafe işleri. Şehrindeki fırsatları anında yakala.</p>
+            <ul class="text-sm font-bold text-emerald-400 space-y-2 uppercase tracking-tighter">
+                <li>• Etkinlik Personeli</li>
+                <li>• Günlük Saha İşleri</li>
+                <li>• Part-Time Kazanç</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="py-24 text-center bg-[#1B263B]/20">
+        <h2 class="text-4xl font-black uppercase italic mb-16 tracking-tighter">3 Adımda <span class="text-blue-500">Kazanmaya</span> Başla</h2>
+        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 px-6">
+            <div>
+                <div class="text-5xl font-black text-white/10 mb-4 italic">01</div>
+                <h4 class="text-xl font-bold mb-2">PROFİLİNİ AÇ</h4>
+                <p class="text-gray-400 text-sm">Yeteneklerini ve ne yapmak istediğini belirt.</p>
+            </div>
+            <div>
+                <div class="text-5xl font-black text-white/10 mb-4 italic">02</div>
+                <h4 class="text-xl font-bold mb-2">DÜNYANI SEÇ</h4>
+                <p class="text-gray-400 text-sm">Dijital veya saha ilanlarından sana uygun olanı bul.</p>
+            </div>
+            <div>
+                <div class="text-5xl font-black text-white/10 mb-4 italic">03</div>
+                <h4 class="text-xl font-bold mb-2">KAZANMAYA BAŞLA</h4>
+                <p class="text-gray-400 text-sm">Hızlıca iletişime geç ve potansiyelini nakite çevir.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="p-10 text-center border-t border-white/5 text-gray-500 text-xs font-bold uppercase tracking-[0.4em]">
+        © 2026 Hablen • Potansiyelini Ateşle
     </footer>
 
 </body>
