@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hablen | Admin Paneli</title>
+    <title>Hablen | Admin Denetimi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: #0b0f1a; color: white; }
-        .admin-card { background: #161b22; border: 1px solid #30363d; transition: 0.2s; }
+        .admin-card { background: #161b22; border: 1px solid #30363d; transition: 0.3s; }
+        .admin-card:hover { border-color: #f59e0b; }
     </style>
 </head>
 <body class="p-8">
 
     <div class="max-w-4xl mx-auto">
         <div class="flex justify-between items-center mb-10">
-            <h1 class="text-3xl font-black italic uppercase">Onay Bekleyen <span class="text-yellow-500">İlanlar</span></h1>
-            <button onclick="window.location.href='profile.html'" class="text-xs font-bold text-gray-500">← Siteye Dön</button>
+            <div>
+                <h1 class="text-3xl font-[900] italic uppercase tracking-tighter text-white">Denetim <span class="text-yellow-500">Merkezi</span></h1>
+                <p class="text-gray-500 text-xs font-bold uppercase mt-1">Onay Bekleyen İlanlar</p>
+            </div>
+            <button onclick="window.location.href='profile.html'" class="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase transition">← Siteye Dön</button>
         </div>
 
-        <div id="adminList" class="grid gap-4">
-            <p class="text-gray-500 italic">Kontrol ediliyor...</p>
+        <div id="adminList" class="grid gap-6">
+            <div class="animate-pulse text-gray-600 font-bold italic">Veriler doğrulanıyor...</div>
         </div>
     </div>
 
@@ -30,40 +34,51 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // BURAYA KENDİ USER ID'Nİ YAZMALISIN (Güvenlik için)
-        const ADMIN_ID = "SENİN_SUPABASE_USER_IDN"; 
+        // SENİN ÖZEL ID'N
+        const ADMIN_ID = "438fb710-cd9b-4761-82be-2a2b84bdb8c4"; 
 
         async function loadPendingJobs() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             
-            // Basit Admin Kontrolü
-            if (user.id !== ADMIN_ID) {
-                alert("Yetkisiz Erişim!");
-                window.location.href = 'profile.html';
+            // Yetki Kontrolü
+            if (!user || user.id !== ADMIN_ID) {
+                document.body.innerHTML = "<div class='flex h-screen items-center justify-center text-red-500 font-black uppercase tracking-widest'>Yetkisiz Erişim!</div>";
+                setTimeout(() => window.location.href = 'profile.html', 2000);
                 return;
             }
 
-            const { data: jobs } = await supabaseClient
+            const { data: jobs, error } = await supabaseClient
                 .from('jobs')
                 .select('*')
                 .eq('status', 'pending')
                 .order('created_at', { ascending: false });
 
             const list = document.getElementById('adminList');
-            list.innerHTML = jobs.length ? '' : '<p class="text-green-500 font-bold">Harika! Onaylanacak ilan kalmadı. 😎</p>';
+            
+            if (!jobs || jobs.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-20 border-2 border-dashed border-gray-800 rounded-[40px]">
+                        <p class="text-gray-600 font-black italic uppercase">Onaylanacak ilan bulunmuyor. Her şey yolunda!</p>
+                    </div>`;
+                return;
+            }
 
+            list.innerHTML = '';
             jobs.forEach(job => {
                 list.innerHTML += `
-                    <div class="admin-card p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="admin-card p-8 rounded-[32px] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div class="flex-1">
-                            <span class="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded font-black uppercase mb-2 inline-block">${job.category}</span>
-                            <h3 class="font-bold text-lg leading-tight uppercase italic">${job.title}</h3>
-                            <p class="text-gray-400 text-xs mt-1">${job.description}</p>
-                            <p class="text-blue-400 font-black mt-2 text-sm">${job.price}</p>
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-[10px] bg-yellow-500 text-black px-2 py-1 rounded font-black uppercase italic">${job.category}</span>
+                                <span class="text-[10px] text-gray-500 font-bold italic">${new Date(job.created_at).toLocaleDateString('tr-TR')}</span>
+                            </div>
+                            <h3 class="font-black text-xl leading-tight uppercase italic text-white mb-2">${job.title}</h3>
+                            <p class="text-gray-400 text-sm font-medium line-clamp-2 mb-4">${job.description}</p>
+                            <p class="text-yellow-500 font-black text-lg italic">${job.price}</p>
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="approveJob('${job.id}')" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase transition">Yayınla ✅</button>
-                            <button onclick="rejectJob('${job.id}')" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase transition">Reddet ❌</button>
+                        <div class="flex gap-3 w-full md:w-auto">
+                            <button onclick="approveJob('${job.id}')" class="flex-1 md:flex-none bg-green-600 hover:bg-green-500 text-white px-8 py-4 rounded-2xl text-xs font-black uppercase transition shadow-lg shadow-green-900/20">Yayınla ✅</button>
+                            <button onclick="rejectJob('${job.id}')" class="flex-1 md:flex-none bg-red-950/30 hover:bg-red-600 text-red-500 hover:text-white px-8 py-4 rounded-2xl text-xs font-black uppercase transition border border-red-900/50">Reddet</button>
                         </div>
                     </div>
                 `;
@@ -71,12 +86,13 @@
         }
 
         async function approveJob(id) {
-            await supabaseClient.from('jobs').update({ status: 'approved' }).eq('id', id);
-            loadPendingJobs();
+            const { error } = await supabaseClient.from('jobs').update({ status: 'approved' }).eq('id', id);
+            if(error) alert("Hata: " + error.message);
+            else loadPendingJobs();
         }
 
         async function rejectJob(id) {
-            if(confirm("İlanı reddetmek ve silmek istediğine emin misin?")) {
+            if(confirm("Bu ilanı sistemden tamamen silmek istediğine emin misin?")) {
                 await supabaseClient.from('jobs').delete().eq('id', id);
                 loadPendingJobs();
             }
