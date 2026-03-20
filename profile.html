@@ -9,10 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: #0D1B2A; color: white; }
-        .job-card { background: #1B263B; border: 1px solid #2D3748; transition: all 0.3s ease; }
+        .job-card { background: #1B263B; border: 1px solid #2D3748; transition: all 0.3s ease; position: relative; }
         .job-card:hover { border-color: #3b82f6; transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
         .loader { border-top-color: #3b82f6; animation: spinner 1.5s linear infinite; }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fav-btn { transition: all 0.2s; }
+        .fav-btn:hover { transform: scale(1.2); color: #ef4444; }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -20,20 +22,17 @@
     <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#1B263B] sticky top-0 z-50">
         <div onclick="window.location.href='index.html'" class="text-2xl font-black tracking-tighter uppercase italic cursor-pointer hover:text-blue-400 transition">HABLEN</div>
         <div class="flex items-center gap-4">
-            <button onclick="window.location.href='create-job.html'" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-xs font-black transition uppercase shadow-lg">
-                + İlan Ver
-            </button>
+            <button onclick="window.location.href='my-profile.html'" class="text-gray-400 hover:text-blue-400 font-bold text-xs uppercase tracking-widest transition">Profilim</button>
+            <button onclick="window.location.href='create-job.html'" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-xs font-black transition uppercase shadow-lg">+ İlan Ver</button>
             <button id="logoutBtn" class="text-red-400 font-bold text-xs">Çıkış</button>
         </div>
     </nav>
 
     <main class="max-w-6xl mx-auto p-6">
-        
         <div class="mt-8 mb-12 text-center">
-            <h1 class="text-4xl font-black mb-6 tracking-tight uppercase italic text-white underline decoration-blue-500 underline-offset-8">İş Fırsatlarını <span class="text-blue-500">Keşfet</span></h1>
+            <h1 class="text-4xl font-black mb-6 tracking-tight uppercase italic">İş Fırsatlarını <span class="text-blue-500">Keşfet</span></h1>
             <div class="relative max-w-2xl mx-auto">
-                <input type="text" id="searchInput" placeholder="İlanlarda ara..." 
-                       class="w-full p-5 pl-14 rounded-2xl bg-[#1B263B] border-2 border-gray-700 outline-none focus:border-blue-500 text-lg transition-all shadow-2xl text-white">
+                <input type="text" id="searchInput" placeholder="İlanlarda ara..." class="w-full p-5 pl-14 rounded-2xl bg-[#1B263B] border-2 border-gray-700 outline-none focus:border-blue-500 text-lg transition-all shadow-2xl text-white">
                 <div class="absolute left-5 top-1/2 -translate-y-1/2 text-xl">🔍</div>
             </div>
         </div>
@@ -42,12 +41,8 @@
             <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-700 h-12 w-12"></div>
         </div>
 
-        <div id="jobList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
-            </div>
-
-        <div id="noJobs" class="hidden text-center my-20">
-            <p class="text-gray-500 font-bold italic">Henüz ilan bulunmuyor. İlk ilanı sen ver!</p>
-        </div>
+        <div id="jobList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+        <div id="noJobs" class="hidden text-center my-20"><p class="text-gray-500 font-bold italic">Henüz ilan bulunmuyor.</p></div>
     </main>
 
     <script>
@@ -56,65 +51,60 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function fetchJobs() {
-            const { data: jobs, error } = await supabaseClient
-                .from('jobs')
-                .select('*')
-                .order('created_at', { ascending: false });
-
+            const { data: jobs, error } = await supabaseClient.from('jobs').select('*').order('created_at', { ascending: false });
             const loader = document.getElementById('loading');
             const jobList = document.getElementById('jobList');
-            const noJobs = document.getElementById('noJobs');
-
             loader.classList.add('hidden');
 
-            if (error) {
-                console.error("Hata:", error);
-                return;
-            }
+            if (jobs && jobs.length > 0) {
+                jobList.classList.remove('hidden');
+                jobList.innerHTML = '';
+                jobs.forEach(job => {
+                    const isDijital = job.category === 'Dijital';
+                    const borderColor = isDijital ? 'border-t-blue-500' : 'border-t-green-500';
+                    const badgeColor = isDijital ? 'bg-blue-500/10 text-blue-400' : 'bg-green-500/10 text-green-400';
 
-            if (!jobs || jobs.length === 0) {
-                noJobs.classList.remove('hidden');
-                return;
-            }
-
-            jobList.classList.remove('hidden');
-            jobList.innerHTML = '';
-
-            jobs.forEach(job => {
-                const isDijital = job.category === 'Dijital';
-                const borderColor = isDijital ? 'border-t-blue-500' : 'border-t-green-500';
-                const badgeColor = isDijital ? 'bg-blue-500/10 text-blue-400' : 'bg-green-500/10 text-green-400';
-
-                // DİKKAT: window.location.href kısmında job-details.html?id=${job.id} kullanarak ID'yi gönderiyoruz
-                const card = `
-                    <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-t-4 ${borderColor}">
-                        <div>
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="text-[10px] ${badgeColor} px-2 py-1 rounded font-black uppercase tracking-tighter">${job.category}</span>
-                                <span class="text-[10px] text-gray-500 font-bold uppercase italic">${new Date(job.created_at).toLocaleDateString('tr-TR')}</span>
+                    jobList.innerHTML += `
+                        <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-t-4 ${borderColor}">
+                            <button onclick="addToFavorites('${job.id}')" class="fav-btn absolute top-4 right-4 text-gray-600 text-xl">❤</button>
+                            <div>
+                                <div class="flex justify-between items-start mb-4">
+                                    <span class="text-[10px] ${badgeColor} px-2 py-1 rounded font-black uppercase tracking-tighter">${job.category}</span>
+                                    <span class="text-[10px] text-gray-500 font-bold uppercase italic">${new Date(job.created_at).toLocaleDateString('tr-TR')}</span>
+                                </div>
+                                <h4 class="font-black text-lg mb-1 leading-tight uppercase italic text-white">${job.title}</h4>
+                                <p class="text-gray-400 text-xs font-medium mb-4 line-clamp-3">${job.description}</p>
                             </div>
-                            <h4 class="font-black text-lg mb-1 leading-tight uppercase italic text-white">${job.title}</h4>
-                            <p class="text-gray-400 text-xs font-medium mb-4 line-clamp-3">${job.description}</p>
+                            <div class="flex items-center justify-between mt-4">
+                                <span class="text-white font-black text-sm italic tracking-tighter">${job.price}</span>
+                                <button onclick="window.location.href='job-details.html?id=${job.id}'" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-blue-500 transition shadow-lg">Detaylar</button>
+                            </div>
                         </div>
-                        <div class="flex items-center justify-between mt-4">
-                            <span class="text-white font-black text-sm italic tracking-tighter">${job.price}</span>
-                            <button onclick="window.location.href='job-details.html?id=${job.id}'" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:bg-blue-500 transition shadow-lg">
-                                Detaylar
-                            </button>
-                        </div>
-                    </div>
-                `;
-                jobList.innerHTML += card;
-            });
+                    `;
+                });
+            } else {
+                document.getElementById('noJobs').classList.remove('hidden');
+            }
+        }
+
+        async function addToFavorites(jobId) {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if(!user) return alert("Önce giriş yapmalısın!");
+
+            const { error } = await supabaseClient.from('favorites').insert([{ user_id: user.id, job_id: jobId }]);
+
+            if (error) {
+                if (error.code === '23505') alert("Bu zaten favorilerinde! ❤️");
+                else alert("Hata: " + error.message);
+            } else {
+                alert("Favorilere eklendi! ✨");
+            }
         }
 
         async function checkUser() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) {
-                window.location.href = 'login.html';
-            } else {
-                fetchJobs();
-            }
+            if (!user) window.location.href = 'login.html';
+            else fetchJobs();
         }
 
         document.getElementById('logoutBtn').addEventListener('click', async () => {
