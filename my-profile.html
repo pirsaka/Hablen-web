@@ -9,28 +9,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: #0D1B2A; color: white; }
-        .tab-btn { border-bottom: 2px solid transparent; transition: all 0.3s; }
-        .tab-btn.active { border-color: #3b82f6; color: #3b82f6; }
-        .job-card { background: #1B263B; border: 1px solid #2D3748; }
+        .tab-btn { border-bottom: 2px solid transparent; transition: all 0.3s; opacity: 0.5; }
+        .tab-btn.active { border-color: #3b82f6; color: #3b82f6; opacity: 1; }
+        .job-card { background: #1B263B; border: 1px solid #2D3748; transition: 0.3s; }
+        .job-card:hover { border-color: #3b82f6; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen pb-20">
 
     <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#1B263B]">
         <div onclick="window.location.href='profile.html'" class="text-2xl font-black uppercase italic cursor-pointer">HABLEN</div>
-        <button onclick="window.location.href='profile.html'" class="text-sm font-bold text-gray-400">← Geri Dön</button>
+        <button onclick="window.location.href='profile.html'" class="text-xs font-black uppercase tracking-widest text-gray-500 hover:text-white transition">← İlanlara Dön</button>
     </nav>
 
-    <main class="max-w-4xl mx-auto p-6">
-        <h1 class="text-3xl font-black mb-8 italic uppercase italic">Profil Paneli</h1>
+    <main id="mainContainer" class="max-w-4xl mx-auto p-6 mt-10">
+        <h1 class="text-4xl font-[900] mb-10 italic uppercase tracking-tighter">Profil <span class="text-blue-500">Merkezi</span></h1>
 
-        <div class="flex gap-8 mb-8">
-            <button onclick="switchTab('my-jobs')" id="tab-jobs" class="tab-btn active pb-2 font-black uppercase text-xs tracking-widest">İlanlarım</button>
-            <button onclick="switchTab('my-favs')" id="tab-favs" class="tab-btn pb-2 font-black uppercase text-xs tracking-widest">Favorilerim</button>
+        <div class="flex gap-10 mb-10 border-b border-white/5">
+            <button onclick="switchTab('my-jobs')" id="tab-jobs" class="tab-btn active pb-4 font-black uppercase text-xs tracking-[0.2em]">İlanlarım</button>
+            <button onclick="switchTab('my-favs')" id="tab-favs" class="tab-btn pb-4 font-black uppercase text-xs tracking-[0.2em]">Favorilerim</button>
         </div>
 
-        <div id="content-jobs" class="grid gap-4"></div>
+        <div id="content-jobs" class="grid gap-4">
+            <div class="animate-pulse text-gray-600 font-bold uppercase text-xs italic">Veriler çekiliyor...</div>
+        </div>
+
         <div id="content-favs" class="hidden grid gap-4"></div>
+
+        <div id="adminSection"></div>
     </main>
 
     <script>
@@ -38,53 +44,79 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        function switchTab(tab) {
-            document.getElementById('content-jobs').classList.add('hidden');
-            document.getElementById('content-favs').classList.add('hidden');
-            document.getElementById('tab-jobs').classList.remove('active');
-            document.getElementById('tab-favs').classList.remove('active');
+        // SENİN ÖZEL ID'N
+        const ADMIN_ID = "438fb710-cd9b-4761-82be-2a2b84bdb8c4";
 
-            if(tab === 'my-jobs') {
-                document.getElementById('content-jobs').classList.remove('hidden');
-                document.getElementById('tab-jobs').classList.add('active');
-            } else {
-                document.getElementById('content-favs').classList.remove('hidden');
-                document.getElementById('tab-favs').classList.add('active');
-            }
+        function switchTab(tab) {
+            document.getElementById('content-jobs').classList.toggle('hidden', tab !== 'my-jobs');
+            document.getElementById('content-favs').classList.toggle('hidden', tab !== 'my-favs');
+            document.getElementById('tab-jobs').classList.toggle('active', tab === 'my-jobs');
+            document.getElementById('tab-favs').classList.toggle('active', tab === 'my-favs');
         }
 
         async function loadProfile() {
             const { data: { user } } = await supabaseClient.auth.getUser();
+            if(!user) { window.location.href = 'login.html'; return; }
 
-            // Kendi İlanlarım
-            const { data: myJobs } = await supabaseClient.from('jobs').select('*').eq('user_id', user.id);
+            // 1. Kendi İlanlarım (Status ne olursa olsun kendisi görsün)
+            const { data: myJobs } = await supabaseClient.from('jobs').select('*').eq('user_id', user.id).order('created_at', {ascending: false});
             const jobsDiv = document.getElementById('content-jobs');
-            jobsDiv.innerHTML = myJobs.length ? '' : '<p class="text-gray-500">Henüz ilan vermedin.</p>';
-            myJobs.forEach(job => {
-                jobsDiv.innerHTML += `
-                    <div class="job-card p-5 rounded-2xl flex justify-between items-center">
-                        <div><h4 class="font-bold uppercase italic">${job.title}</h4><p class="text-xs text-gray-400">${job.price}</p></div>
-                        <button onclick="deleteJob('${job.id}')" class="text-red-500 font-bold text-[10px] uppercase">Sil</button>
-                    </div>`;
-            });
-
-            // Favorilerim (Joins kullanarak)
-            const { data: favs } = await supabaseClient.from('favorites').select('id, job_id, jobs(title, price)').eq('user_id', user.id);
-            const favsDiv = document.getElementById('content-favs');
-            favsDiv.innerHTML = favs.length ? '' : '<p class="text-gray-500">Favori ilanın yok.</p>';
-            favs.forEach(fav => {
-                if(fav.jobs) {
-                    favsDiv.innerHTML += `
-                        <div class="job-card p-5 rounded-2xl flex justify-between items-center">
-                            <div><h4 class="font-bold uppercase italic">${fav.jobs.title}</h4><p class="text-xs text-gray-400">${fav.jobs.price}</p></div>
-                            <button onclick="removeFav('${fav.id}')" class="text-gray-500 font-bold text-[10px] uppercase">Kaldır</button>
+            
+            if(myJobs && myJobs.length > 0) {
+                jobsDiv.innerHTML = '';
+                myJobs.forEach(job => {
+                    const statusText = job.status === 'pending' ? '🟡 Onay Bekliyor' : '🟢 Yayında';
+                    jobsDiv.innerHTML += `
+                        <div class="job-card p-6 rounded-[32px] flex justify-between items-center">
+                            <div>
+                                <span class="text-[9px] font-black uppercase tracking-widest opacity-50">${statusText}</span>
+                                <h4 class="font-black text-lg uppercase italic text-white mt-1">${job.title}</h4>
+                                <p class="text-xs text-blue-400 font-bold">${job.price}</p>
+                            </div>
+                            <button onclick="deleteJob('${job.id}')" class="bg-red-500/10 text-red-500 px-4 py-2 rounded-xl font-black text-[10px] uppercase hover:bg-red-500 hover:text-white transition">Sil</button>
                         </div>`;
-                }
-            });
+                });
+            } else {
+                jobsDiv.innerHTML = '<p class="text-gray-600 italic font-medium">Henüz bir ilan paylaşmadın.</p>';
+            }
+
+            // 2. Favorilerim
+            const { data: favs } = await supabaseClient.from('favorites').select('id, job_id, jobs(title, price, category)').eq('user_id', user.id);
+            const favsDiv = document.getElementById('content-favs');
+            
+            if(favs && favs.length > 0) {
+                favsDiv.innerHTML = '';
+                favs.forEach(fav => {
+                    if(fav.jobs) {
+                        favsDiv.innerHTML += `
+                            <div class="job-card p-6 rounded-[32px] flex justify-between items-center border-l-4 border-red-500">
+                                <div>
+                                    <h4 class="font-black text-white uppercase italic">${fav.jobs.title}</h4>
+                                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">${fav.jobs.category} • ${fav.jobs.price}</p>
+                                </div>
+                                <button onclick="removeFav('${fav.id}')" class="text-gray-500 hover:text-white font-black text-[10px] uppercase transition">Kaldır</button>
+                            </div>`;
+                    }
+                });
+            } else {
+                favsDiv.innerHTML = '<p class="text-gray-600 italic font-medium">Favorilere eklediğin bir ilan bulunmuyor.</p>';
+            }
+
+            // 3. ADMİN KONTROLÜ (Sadece senin ID'ne özel buton)
+            if (user.id === ADMIN_ID) {
+                document.getElementById('adminSection').innerHTML = `
+                    <div class="mt-20 p-10 border-2 border-dashed border-yellow-500/20 rounded-[40px] bg-yellow-500/5 text-center">
+                        <p class="text-yellow-500 font-black text-[10px] uppercase mb-4 tracking-[0.3em]">Yönetici Modu Aktif</p>
+                        <button onclick="window.location.href='admin-panel.html'" class="bg-yellow-500 text-black px-12 py-5 rounded-2xl font-[900] uppercase italic hover:bg-yellow-400 transition shadow-2xl shadow-yellow-500/20 transform active:scale-95">
+                            İlan Onay Merkezine Git ⚡
+                        </button>
+                    </div>
+                `;
+            }
         }
 
         async function deleteJob(id) {
-            if(confirm("Silmek istediğine emin misin?")) {
+            if(confirm("Bu ilanı kalıcı olarak silmek istediğine emin misin?")) {
                 await supabaseClient.from('jobs').delete().eq('id', id);
                 loadProfile();
             }
