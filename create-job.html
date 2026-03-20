@@ -3,74 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hablen | İlan Oluştur</title>
+    <title>Hablen | İlan Yayınla</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: #0D1B2A; color: white; }
         .input-field { background: #1B263B; border: 1px solid #2D3748; transition: 0.3s; }
-        .input-field:focus { border-color: #3b82f6; outline: none; }
-        .success-badge { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .input-field:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 20px rgba(59, 130, 246, 0.1); }
+        .info-card { background: rgba(34, 197, 94, 0.03); border: 1px solid rgba(34, 197, 94, 0.1); }
     </style>
 </head>
-<body class="min-h-screen p-6 pb-20">
+<body class="min-h-screen p-6 pb-24">
 
-    <nav class="max-w-3xl mx-auto flex justify-between items-center mb-12">
-        <div onclick="window.location.href='profile.html'" class="text-2xl font-black uppercase italic cursor-pointer tracking-tighter">HABLEN</div>
-        <button onclick="window.location.href='profile.html'" class="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition">Vazgeç</button>
+    <nav class="max-w-3xl mx-auto flex justify-between items-center mb-16">
+        <div onclick="window.location.href='profile.html'" class="text-2xl font-black uppercase italic tracking-tighter cursor-pointer hover:text-blue-500 transition">HABLEN</div>
+        <button onclick="window.location.href='profile.html'" class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-white transition">Vazgeç</button>
     </nav>
 
-    <main class="max-w-2xl mx-auto">
-        <header class="mb-10 text-center md:text-left">
-            <h1 class="text-4xl font-[900] uppercase italic tracking-tighter text-white">İlan <span class="text-blue-500">Yayınla</span></h1>
-            <p class="text-gray-500 text-[10px] font-bold uppercase mt-2 tracking-[0.2em] italic">Hızlı, Kolay ve Onaylı</p>
+    <main class="max-w-xl mx-auto">
+        <header class="mb-12">
+            <h1 class="text-5xl font-[900] uppercase italic tracking-tighter text-white leading-none">İlanını <br><span class="text-blue-500">Hazırla</span></h1>
+            <p class="text-gray-500 text-[10px] font-bold uppercase mt-4 tracking-[0.3em] italic">Onay sonrası yayına girecektir.</p>
         </header>
 
-        <form id="jobForm" class="space-y-8">
+        <form id="jobForm" class="space-y-10">
             <div>
-                <label class="block text-gray-400 text-[10px] font-black uppercase mb-3 tracking-widest">İş Başlığı</label>
-                <input type="text" id="title" placeholder="Örn: Profesyonel Video Kurgu" class="input-field w-full p-5 rounded-[20px] text-white" required>
+                <label class="block text-gray-400 text-[10px] font-black uppercase mb-4 tracking-widest">İşin Başlığı</label>
+                <input type="text" id="title" placeholder="Örn: Profesyonel Çeviri Hizmeti" class="input-field w-full p-6 rounded-[28px] text-white font-medium" required>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-gray-400 text-[10px] font-black uppercase mb-3 tracking-widest">Ücret</label>
-                    <input type="text" id="price" placeholder="Örn: 500 TL" class="input-field w-full p-5 rounded-[20px] text-white" required>
+                    <label class="block text-gray-400 text-[10px] font-black uppercase mb-4 tracking-widest">Kategori</label>
+                    <select id="category" class="input-field w-full p-6 rounded-[28px] text-white appearance-none cursor-pointer font-bold uppercase italic text-xs">
+                        <option value="Dijital Hizmet">Dijital Hizmet</option>
+                        <option value="İş İlanı">İş İlanı</option>
+                    </select>
                 </div>
                 <div>
-                    <label class="block text-gray-400 text-[10px] font-black uppercase mb-3 tracking-widest">Kategori</label>
-                    <select id="category" class="input-field w-full p-5 rounded-[20px] text-white appearance-none cursor-pointer">
-                        <option value="Dijital">Dijital Hizmet</option>
-                        <option value="Yazılım">Yazılım</option>
-                        <option value="Tasarım">Tasarım</option>
-                    </select>
+                    <label class="block text-gray-400 text-[10px] font-black uppercase mb-4 tracking-widest">Bütçe / Ücret</label>
+                    <input type="text" id="price" placeholder="Örn: 2.000 TL" class="input-field w-full p-6 rounded-[28px] text-white font-bold" required>
                 </div>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-4">
                 <label class="block text-green-500 text-[10px] font-black uppercase tracking-widest">WhatsApp Numaranız</label>
                 <div class="relative">
-                    <input type="text" id="phone_input" placeholder="5XXXXXXXXX" maxlength="10" class="input-field w-full p-5 rounded-[20px] text-white border-green-500/20 focus:border-green-500 transition" required>
-                    <span class="absolute right-5 top-1/2 -translate-y-1/2 text-green-500 font-black text-xs uppercase italic">TR (+90)</span>
+                    <input type="text" id="phone_num" placeholder="5XXXXXXXXX" maxlength="10" 
+                           class="input-field w-full p-6 rounded-[28px] text-white font-black tracking-widest border-green-500/10 focus:border-green-500 transition" required>
+                    <span class="absolute right-6 top-1/2 -translate-y-1/2 text-green-500/50 font-black text-[10px] italic">+90 (TR)</span>
                 </div>
                 
-                <div id="linkPreview" class="hidden success-badge p-4 rounded-2xl flex items-start gap-3">
-                    <span class="text-lg">✅</span>
-                    <p class="text-[10px] font-medium leading-relaxed">
-                        Müşteri size şu mesajla ulaşacak: <br>
-                        <span class="italic text-white font-bold">"Merhaba, Hablen'deki ilanınız için yazıyorum. Detayları görüşebilir miyiz?"</span>
-                    </p>
+                <div id="msgPreview" class="hidden info-card p-6 rounded-[30px] flex items-start gap-4 animate-in fade-in duration-500">
+                    <span class="text-xl">✨</span>
+                    <div>
+                        <p class="text-[10px] text-green-400 font-black uppercase tracking-widest mb-2">Otomatik İletişim Hazır!</p>
+                        <p class="text-[11px] text-gray-400 leading-relaxed italic">
+                            Müşteriler size şu mesajla ulaşacak: <br>
+                            <span class="text-white font-bold block mt-2">"Merhaba, Hablen'deki ilanınız için yazıyorum. Detayları görüşebilir miyiz?"</span>
+                        </p>
+                    </div>
                 </div>
             </div>
 
             <div>
-                <label class="block text-gray-400 text-[10px] font-black uppercase mb-3 tracking-widest">İş Açıklaması</label>
-                <textarea id="description" rows="5" placeholder="İşi detaylandırın..." class="input-field w-full p-5 rounded-[20px] text-white resize-none" required></textarea>
+                <label class="block text-gray-400 text-[10px] font-black uppercase mb-4 tracking-widest">İşin Detayları</label>
+                <textarea id="description" rows="6" placeholder="İşin kapsamını detaylıca açıklayın..." 
+                          class="input-field w-full p-6 rounded-[28px] text-white resize-none leading-relaxed" required></textarea>
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-6 rounded-[25px] uppercase italic transition shadow-2xl shadow-blue-900/20 text-lg">
-                Onaya Gönder 🚀
+            <button type="submit" id="submitBtn" 
+                    class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-7 rounded-[30px] uppercase italic transition transform active:scale-95 shadow-2xl shadow-blue-900/40 text-lg tracking-tighter">
+                İlanı Kontrole Gönder ⚡
             </button>
         </form>
     </main>
@@ -80,18 +85,19 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const phoneInput = document.getElementById('phone_input');
-        const preview = document.getElementById('linkPreview');
+        const phoneInput = document.getElementById('phone_num');
+        const msgPreview = document.getElementById('msgPreview');
 
-        // Kullanıcı numara yazdıkça kontrol et ve önizleme göster
+        // Numara girişi kontrolü
         phoneInput.addEventListener('input', (e) => {
-            const val = e.target.value.replace(/\D/g, ''); // Sadece rakam kalsın
+            let val = e.target.value.replace(/\D/g, ''); 
+            if (val.startsWith('0')) val = val.substring(1); // 0 ile başlarsa sil
             e.target.value = val;
 
             if(val.length === 10) {
-                preview.classList.remove('hidden');
+                msgPreview.classList.remove('hidden');
             } else {
-                preview.classList.add('hidden');
+                msgPreview.classList.add('hidden');
             }
         });
 
@@ -99,21 +105,21 @@
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerText = "YÜKLENİYOR...";
+            btn.innerText = "YAYINLANIYOR...";
 
             const { data: { user } } = await supabaseClient.auth.getUser();
 
-            // 🛠 LİNK OLUŞTURMA SİHİRİ 🛠
+            // 🛠 LİNK OLUŞTURUCU 🛠
             const phone = phoneInput.value;
             const message = encodeURIComponent("Merhaba, Hablen'deki ilanınız için yazıyorum. Detayları görüşebilir miyiz?");
-            const finalLink = `https://wa.me/90${phone}?text=${message}`;
+            const autoLink = `https://wa.me/90${phone}?text=${message}`;
 
             const jobData = {
                 user_id: user.id,
                 title: document.getElementById('title').value,
                 category: document.getElementById('category').value,
                 price: document.getElementById('price').value,
-                contact_link: finalLink, // Hazır linki kaydediyoruz
+                contact_link: autoLink, 
                 description: document.getElementById('description').value,
                 status: 'pending' 
             };
@@ -123,9 +129,9 @@
             if (error) {
                 alert("Hata: " + error.message);
                 btn.disabled = false;
-                btn.innerText = "Onaya Gönder 🚀";
+                btn.innerText = "İlanı Kontrole Gönder ⚡";
             } else {
-                alert("Harika! İlanın onaya gönderildi.");
+                alert("İlanın sisteme alındı! Onaylandıktan sonra yayına girecektir. 🚀");
                 window.location.href = 'profile.html';
             }
         });
