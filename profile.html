@@ -3,47 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hablen | İlan Panosu</title>
+    <title>Hablen | İlanlar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: #0D1B2A; color: white; }
-        .job-card { background: #1B263B; border: 1px solid #2D3748; transition: all 0.3s ease; position: relative; }
-        .job-card:hover { border-color: #3b82f6; transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        .loader { border-top-color: #3b82f6; animation: spinner 1.5s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .fav-btn { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
-        .fav-btn:active { transform: scale(0.7); }
-        .fav-active { color: #ef4444 !important; transform: scale(1.2); filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.5)); }
+        .job-card { 
+            background: #1B263B; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            transition: all 0.3s ease;
+        }
+        .job-card:hover { 
+            transform: translateY(-5px); 
+            border-color: #3b82f6; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="min-h-screen pb-20">
 
-    <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#1B263B] sticky top-0 z-50">
-        <div onclick="window.location.href='index.html'" class="text-2xl font-black tracking-tighter uppercase italic cursor-pointer hover:text-blue-400 transition">HABLEN</div>
-        <div class="flex items-center gap-4">
-            <button onclick="window.location.href='my-profile.html'" class="text-gray-400 hover:text-blue-400 font-bold text-xs uppercase tracking-widest transition">Profilim</button>
-            <button onclick="window.location.href='create-job.html'" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-xs font-black transition uppercase shadow-lg">+ İlan Ver</button>
-            <button id="logoutBtn" class="text-red-400 font-bold text-xs hover:underline">Çıkış</button>
+    <nav class="p-6 flex justify-between items-center border-b border-gray-800 bg-[#0D1B2A] sticky top-0 z-50">
+        <div class="text-2xl font-[900] uppercase italic tracking-tighter">HABLEN</div>
+        <div class="flex gap-4">
+            <button onclick="window.location.href='admin-panel.html'" class="text-[10px] font-black uppercase tracking-widest text-blue-400">Panel</button>
+            <button onclick="window.location.href='create-job.html'" class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase italic shadow-lg shadow-blue-600/20">+ İlan Ver</button>
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto p-6">
-        <div class="mt-8 mb-12 text-center">
-            <h1 class="text-4xl font-black mb-6 tracking-tight uppercase italic text-white">Fırsatları <span class="text-blue-500">Yakala</span></h1>
-            <div class="relative max-w-2xl mx-auto">
-                <input type="text" id="searchInput" placeholder="İlanlarda ara..." class="w-full p-5 pl-14 rounded-2xl bg-[#1B263B] border-2 border-gray-700 outline-none focus:border-blue-500 text-lg transition-all shadow-2xl text-white">
-                <div class="absolute left-5 top-1/2 -translate-y-1/2 text-xl opacity-30">🔍</div>
+    <header class="max-w-6xl mx-auto p-6 mt-10 text-center">
+        <h1 class="text-5xl md:text-7xl font-[900] uppercase italic tracking-tighter mb-8">Fırsatları <span class="text-blue-500">Yakala</span></h1>
+        <div class="relative max-w-xl mx-auto">
+            <input type="text" placeholder="İlanlarda ara..." class="w-full bg-[#1B263B] p-5 rounded-[24px] border border-gray-800 outline-none focus:border-blue-500 transition text-sm">
+            <span class="absolute right-6 top-1/2 -translate-y-1/2 opacity-50 text-xl">🔍</span>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-6 mt-10">
+        <div id="jobList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div id="loading" class="col-span-full text-center py-20 text-gray-500 font-bold uppercase italic animate-pulse">
+                İlanlar Yükleniyor...
             </div>
         </div>
-
-        <div id="loading" class="flex justify-center my-20">
-            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-700 h-12 w-12"></div>
-        </div>
-
-        <div id="jobList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
-        <div id="noJobs" class="hidden text-center my-20"><p class="text-gray-500 font-bold italic uppercase tracking-widest text-sm">Onaylı ilan bulunamadı.</p></div>
     </main>
 
     <script>
@@ -52,89 +59,67 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function fetchJobs() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            
-            // 🔥 KRİTİK DEĞİŞİKLİK BURADA: .eq('status', 'approved') ekledik
             const { data: jobs, error } = await supabaseClient
                 .from('jobs')
                 .select('*')
-                .eq('status', 'approved') 
+                .eq('status', 'approved') // Sadece onaylı ilanları göster
                 .order('created_at', { ascending: false });
-            
-            const { data: userFavs } = await supabaseClient.from('favorites').select('job_id').eq('user_id', user.id);
-            const favIds = userFavs ? userFavs.map(f => f.job_id) : [];
 
-            const loader = document.getElementById('loading');
             const jobList = document.getElementById('jobList');
-            loader.classList.add('hidden');
+            jobList.innerHTML = '';
 
-            if (jobs && jobs.length > 0) {
-                jobList.classList.remove('hidden');
-                jobList.innerHTML = '';
-                
-                jobs.forEach(job => {
-                    const isDijital = job.category === 'Dijital';
-                    const borderColor = isDijital ? 'border-t-blue-500' : 'border-t-green-500';
-                    const badgeColor = isDijital ? 'bg-blue-500/10 text-blue-400' : 'bg-green-500/10 text-green-400';
-                    const isFavorited = favIds.includes(job.id) ? 'fav-active' : '';
+            if (error || jobs.length === 0) {
+                jobList.innerHTML = '<p class="col-span-full text-center text-gray-500 py-20 font-black italic uppercase">Henüz yayında ilan yok.</p>';
+                return;
+            }
 
-                    jobList.innerHTML += `
-                        <div class="job-card p-6 rounded-3xl flex flex-col justify-between border-t-4 ${borderColor}">
-                            <div class="flex justify-between items-center mb-6">
-                                <span class="text-[10px] ${badgeColor} px-2 py-1 rounded font-black uppercase tracking-tighter">${job.category}</span>
-                                <div class="flex items-center gap-3">
-                                    <span class="text-[10px] text-gray-500 font-bold uppercase italic">${new Date(job.created_at).toLocaleDateString('tr-TR')}</span>
-                                    <button id="fav-btn-${job.id}" onclick="toggleFavorite('${job.id}')" class="fav-btn text-gray-600 text-xl hover:text-red-500 focus:outline-none ${isFavorited}">
-                                        ❤
-                                    </button>
+            jobs.forEach(job => {
+                // FOTOĞRAF KONTROLÜ
+                const imageHtml = job.image_url 
+                    ? `<img src="${job.image_url}" class="w-full h-48 object-cover rounded-[24px] mb-5 border border-white/5 shadow-inner">` 
+                    : '';
+
+                jobList.innerHTML += `
+                    <div class="job-card p-6 rounded-[40px] flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-5">
+                                <span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-lg text-[9px] font-black uppercase italic tracking-widest">
+                                    ${job.category}
+                                </span>
+                                <div class="flex items-center gap-4">
+                                    <span class="text-gray-500 text-[10px] font-bold italic opacity-60">
+                                        ${new Date(job.created_at).toLocaleDateString('tr-TR')}
+                                    </span>
+                                    <span class="text-gray-600 hover:text-red-500 transition cursor-pointer text-xs">❤️</span>
                                 </div>
                             </div>
-                            
-                            <div class="mb-6">
-                                <h4 class="font-black text-xl mb-2 leading-tight uppercase italic text-white">${job.title}</h4>
-                                <p class="text-gray-400 text-xs font-medium line-clamp-2 leading-relaxed">${job.description}</p>
-                            </div>
 
-                            <div class="flex items-center justify-between pt-4 border-t border-white/5">
-                                <span class="text-white font-black text-base italic tracking-tighter underline decoration-blue-500/50 underline-offset-4">${job.price}</span>
-                                <button onclick="window.location.href='job-details.html?id=${job.id}'" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase hover:bg-blue-500 transition shadow-lg transform active:scale-95">
-                                    DETAYLAR
-                                </button>
-                            </div>
+                            ${imageHtml}
+
+                            <h3 class="text-2xl font-[900] uppercase italic leading-[0.85] mb-3 tracking-tighter text-white">
+                                ${job.title}
+                            </h3>
+                            <p class="text-gray-400 text-xs font-medium leading-relaxed line-clamp-2 mb-6 italic">
+                                ${job.description}
+                            </p>
                         </div>
-                    `;
-                });
-            } else {
-                document.getElementById('noJobs').classList.remove('hidden');
-            }
+                        
+                        <div class="flex justify-between items-center pt-5 border-t border-white/5 mt-auto">
+                            <div>
+                                <p class="text-[8px] text-gray-600 font-black uppercase tracking-widest">Bütçe</p>
+                                <span class="text-xl font-black italic text-white tracking-tighter">${job.price}</span>
+                            </div>
+                            <button onclick="window.location.href='job-details.html?id=${job.id}'" 
+                                    class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase italic transition shadow-lg shadow-blue-600/10">
+                                Detaylar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        async function toggleFavorite(jobId) {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if(!user) return;
-            const btn = document.getElementById(`fav-btn-${jobId}`);
-            const isFav = btn.classList.contains('fav-active');
-            if (isFav) {
-                btn.classList.remove('fav-active');
-                await supabaseClient.from('favorites').delete().eq('user_id', user.id).eq('job_id', jobId);
-            } else {
-                btn.classList.add('fav-active');
-                await supabaseClient.from('favorites').insert([{ user_id: user.id, job_id: jobId }]);
-            }
-        }
-
-        async function checkUser() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) window.location.href = 'login.html';
-            else fetchJobs();
-        }
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await supabaseClient.auth.signOut();
-            window.location.href = 'index.html';
-        });
-
-        checkUser();
+        fetchJobs();
     </script>
 </body>
 </html>
