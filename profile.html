@@ -13,6 +13,8 @@
             background: #1B263B; 
             border: 1px solid rgba(255,255,255,0.05); 
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
         .job-card:hover { 
             transform: translateY(-5px); 
@@ -41,7 +43,7 @@
     <header class="max-w-6xl mx-auto p-6 mt-10 text-center">
         <h1 class="text-5xl md:text-7xl font-[900] uppercase italic tracking-tighter mb-8 text-white">Fırsatları <span class="text-blue-500">Yakala</span></h1>
         <div class="relative max-w-xl mx-auto">
-            <input type="text" id="searchInput" placeholder="İlanlarda ara..." class="w-full bg-[#1B263B] p-5 rounded-[24px] border border-gray-800 outline-none focus:border-blue-500 transition text-sm text-white">
+            <input type="text" id="searchInput" placeholder="İş, hizmet veya kategori ara..." class="w-full bg-[#1B263B] p-5 rounded-[24px] border border-gray-800 outline-none focus:border-blue-500 transition text-sm text-white">
             <span class="absolute right-6 top-1/2 -translate-y-1/2 opacity-50 text-xl">🔍</span>
         </div>
     </header>
@@ -59,17 +61,18 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_vavMMathuMNaoCi2v_epbA_P7wSnvvO';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // BURAYA KENDİ ADMİN E-POSTA ADRESİNİ YAZ
-        const ADMIN_EMAIL = "frkndmr2010@gmail.com"; 
+        // --- AYAR: KENDİ ADMİN MAİLİNİ BURAYA YAZ ---
+        const ADMIN_EMAIL = "seninmailin@example.com"; 
 
+        // 1. Admin Kontrolü
         async function checkAdmin() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if (user && user.email === ADMIN_EMAIL) {
-                // Eğer kullanıcı admin ise butonu göster
                 document.getElementById('adminPanelBtn').classList.remove('hidden');
             }
         }
 
+        // 2. İlanları Çekme
         async function fetchJobs() {
             const { data: jobs, error } = await supabaseClient
                 .from('jobs')
@@ -91,10 +94,10 @@
                     : '';
 
                 jobList.innerHTML += `
-                    <div class="job-card p-6 rounded-[40px] flex flex-col justify-between">
-                        <div>
+                    <div class="job-card p-6 rounded-[40px]">
+                        <div class="flex-1">
                             <div class="flex justify-between items-center mb-5">
-                                <span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-lg text-[9px] font-black uppercase italic tracking-widest">
+                                <span class="category-badge bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-lg text-[9px] font-black uppercase italic tracking-widest">
                                     ${job.category}
                                 </span>
                                 <div class="flex items-center gap-4">
@@ -105,10 +108,10 @@
                                 </div>
                             </div>
                             ${imageHtml}
-                            <h3 class="text-2xl font-[900] uppercase italic leading-[0.85] mb-3 tracking-tighter text-white">
+                            <h3 class="job-title text-2xl font-[900] uppercase italic leading-[0.85] mb-3 tracking-tighter text-white">
                                 ${job.title}
                             </h3>
-                            <p class="text-gray-400 text-xs font-medium leading-relaxed line-clamp-2 mb-6 italic">
+                            <p class="job-desc text-gray-400 text-xs font-medium leading-relaxed line-clamp-2 mb-6 italic">
                                 ${job.description}
                             </p>
                         </div>
@@ -127,7 +130,26 @@
             });
         }
 
-        // Sayfa açıldığında hem admini kontrol et hem ilanları çek
+        // 3. Gelişmiş Arama Fonksiyonu
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.job-card');
+
+            cards.forEach(card => {
+                const title = card.querySelector('.job-title').innerText.toLowerCase();
+                const desc = card.querySelector('.job-desc').innerText.toLowerCase();
+                const cat = card.querySelector('.category-badge').innerText.toLowerCase();
+
+                if (title.includes(term) || desc.includes(term) || cat.includes(term)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Başlat
         checkAdmin();
         fetchJobs();
     </script>
